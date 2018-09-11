@@ -1,0 +1,1 @@
+This folder is for testing out and learning about how a React native mobile application works.
