@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            startActivity(new Intent(MainActivity.this, HomePage.class));
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
@@ -77,7 +78,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.googleButton:
-                signIn();
+                //signIn();
+                startActivity(new Intent(MainActivity.this, HomePage.class));
                 break;
         }
     }
