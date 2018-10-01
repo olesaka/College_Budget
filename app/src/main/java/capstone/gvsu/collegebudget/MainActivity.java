@@ -108,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 signIn();
                 break;
             case R.id.SignOut:
-                FirebaseAuth.getInstance().signOut();
+                mAuth.signOut();
+                mGoogleSignInClient.signOut();
                 signOut.setVisibility(View.GONE);
                 break;
         }
