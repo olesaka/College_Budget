@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.googleButton).setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
         signOut = findViewById(R.id.SignOut);
+        findViewById(R.id.SignOut).setOnClickListener(this);
     }
 
 
@@ -100,17 +101,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        if(result.isSuccess()){
-            GoogleSignInAccount account = result.getSignInAccount();
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.googleButton:
                 signIn();
+                break;
+            case R.id.SignOut:
+                FirebaseAuth.getInstance().signOut();
+                signOut.setVisibility(View.GONE);
                 break;
         }
     }
