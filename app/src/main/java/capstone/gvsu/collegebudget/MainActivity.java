@@ -25,6 +25,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private final static int RC_SIGN_IN = 2;
     private static final String TAG = "SignInActivity";
     GoogleSignInClient mGoogleSignInClient;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mAuth = FirebaseAuth.getInstance();
         signOut = findViewById(R.id.SignOut);
         findViewById(R.id.SignOut).setOnClickListener(this);
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("yes, yes, yes!!!");
+        writeNewUser("6473", "Tim", "yes@no.com", 18);
     }
 
 
@@ -105,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.googleButton:
+                mDatabase.child("message").setValue("Hello World");
                 signIn();
                 break;
             case R.id.SignOut:
@@ -113,6 +124,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 signOut.setVisibility(View.GONE);
                 break;
         }
+    }
+
+    private void writeNewUser(String userId, String name, String email, int age) {
+        User user = new User(name, email, age);
+
+        mDatabase.child("users").child(userId).setValue(user);
+        User u2 = new User("Jake", "why@not.com", 4);
+        mDatabase.child("users").child("num2").setValue(u2);
     }
 
     @Override
