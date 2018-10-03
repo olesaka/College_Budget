@@ -2,6 +2,7 @@ package capstone.gvsu.collegebudget;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -56,11 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         signOut = findViewById(R.id.SignOut);
         findViewById(R.id.SignOut).setOnClickListener(this);
         // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+        //FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //DatabaseReference myRef = database.getReference("message");
 
-        myRef.setValue("yes, yes, yes!!!");
-        writeNewUser("6473", "Tim", "yes@no.com", 18);
+        //myRef.setValue("yes, yes, yes!!!");
+        //writeNewUser("6473", "Tim", "yes@no.com", 18);
     }
 
 
@@ -89,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -98,9 +98,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            FirebaseUser googleUser = mAuth.getCurrentUser();
+                            User user = new User(googleUser.getUid());
                             signOut.setVisibility(View.VISIBLE);
-                            //startActivity(new Intent(MainActivity.this, HomePage.class));
+                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+                            intent.putExtra("user", (Parcelable) user);
+                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -115,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.googleButton:
-                mDatabase.child("message").setValue("Hello World");
                 signIn();
                 break;
             case R.id.SignOut:
@@ -127,11 +129,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void writeNewUser(String userId, String name, String email, int age) {
-        User user = new User(name, email, age);
+        //User user = new User(name, email, age);
 
-        mDatabase.child("users").child(userId).setValue(user);
-        User u2 = new User("Jake", "why@not.com", 4);
-        mDatabase.child("users").child("num2").setValue(u2);
+       // mDatabase.child("users").child(userId).setValue(user);
+        //User u2 = new User("Jake", "why@not.com", 4);
+        //mDatabase.child("users").child("num2").setValue(u2);
     }
 
     @Override

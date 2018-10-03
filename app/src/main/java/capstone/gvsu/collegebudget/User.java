@@ -1,18 +1,38 @@
 package capstone.gvsu.collegebudget;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    public String username;
-    public String email;
-    public int age;
+public class User implements Parcelable{
+    private String id;
 
-    public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    public User(String id){
+        this.id = id;
     }
 
-    public User(String username, String email, int age) {
-        this.age = age;
-        this.username = username;
-        this.email = email;
+    protected User(Parcel in) {
+        id = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
     }
 }
