@@ -16,7 +16,7 @@ import android.view.MenuItem;
 public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    User user;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class HomePage extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        user = (User) getIntent().getSerializableExtra("user");
+        user = (User) getIntent().getParcelableExtra("user");
     }
 
     @Override

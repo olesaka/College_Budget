@@ -3,11 +3,22 @@ package capstone.gvsu.collegebudget;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.firebase.auth.FirebaseAuth;
+
 public class User implements Parcelable{
     private String id;
+    private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
 
-    public User(String id){
+    public User(String id, FirebaseAuth mAuth, GoogleSignInClient mGoogleSignInClient){
         this.id = id;
+        this.mAuth = mAuth;
+        this.mGoogleSignInClient = mGoogleSignInClient;
+    }
+
+    public String getId(){
+        return this.id;
     }
 
     protected User(Parcel in) {

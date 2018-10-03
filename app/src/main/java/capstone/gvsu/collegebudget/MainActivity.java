@@ -26,9 +26,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -37,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseAuth mAuth;
     private final static int RC_SIGN_IN = 2;
     private static final String TAG = "SignInActivity";
-    GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInClient mGoogleSignInClient;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -99,11 +102,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser googleUser = mAuth.getCurrentUser();
-                            User user = new User(googleUser.getUid());
+                            User user = new User(googleUser.getUid(), mAuth, mGoogleSignInClient);
+                            DatabaseReference userIdRef = GetFirebaseReference(user.getId(), googleUser.getDisplayName());
                             signOut.setVisibility(View.VISIBLE);
-                            Intent intent = new Intent(MainActivity.this, HomePage.class);
-                            intent.putExtra("user", (Parcelable) user);
-                            startActivity(intent);
+//                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+//                            intent.putExtra("user", user);
+//                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -128,12 +132,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void writeNewUser(String userId, String name, String email, int age) {
-        //User user = new User(name, email, age);
+    public DatabaseReference GetFirebaseReference(final String id, final String displayName){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference userIdRef = rootRef.child("Users").child(id);
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    //create new user
+                    userIdRef.setValue(displayName);
+                }
+            }
 
-       // mDatabase.child("users").child(userId).setValue(user);
-        //User u2 = new User("Jake", "why@not.com", 4);
-        //mDatabase.child("users").child("num2").setValue(u2);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        userIdRef.addListenerForSingleValueEvent(eventListener);
+        return userIdRef;
     }
 
     @Override
