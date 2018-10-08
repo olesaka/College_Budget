@@ -5,32 +5,34 @@
     android:orientation="horizontal" >
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:text="@string/rowName" />
 
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/editSpent"
         android:layout_width="112dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
-        android:inputType="number" />
+        android:inputType="number"
+        android:text="@string/emptyCost" />
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/editBudget"
         android:layout_width="107dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
-        android:inputType="number" />
+        android:inputType="number"
+        android:text="@string/emptyCost" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/deleteRow"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
