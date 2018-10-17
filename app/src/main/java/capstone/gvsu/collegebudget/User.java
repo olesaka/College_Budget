@@ -5,24 +5,21 @@ import android.os.Parcelable;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
-public class User implements Parcelable{
+import java.io.Serializable;
+
+public class User implements Parcelable {
     private String id;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private DatabaseReference userIdRef;
 
-    public User(String id, FirebaseAuth mAuth, GoogleSignInClient mGoogleSignInClient){
+    public User(String id, FirebaseAuth mAuth, GoogleSignInClient mGoogleSignInClient, DatabaseReference userIdRef){
         this.id = id;
         this.mAuth = mAuth;
         this.mGoogleSignInClient = mGoogleSignInClient;
-    }
-
-    public String getId(){
-        return this.id;
-    }
-
-    protected User(Parcel in) {
-        id = in.readString();
+        this.userIdRef = userIdRef;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -36,6 +33,18 @@ public class User implements Parcelable{
             return new User[size];
         }
     };
+
+    public DatabaseReference GetDatabaseRef(){
+        return userIdRef;
+    }
+
+    public String getId(){
+        return this.id;
+    }
+
+    protected User(Parcel in) {
+        id = in.readString();
+    }
 
     @Override
     public int describeContents() {

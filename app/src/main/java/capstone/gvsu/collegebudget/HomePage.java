@@ -1,5 +1,6 @@
 package capstone.gvsu.collegebudget;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,6 +18,7 @@ public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private User user;
+    private Database database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,10 @@ public class HomePage extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);Intent i = getIntent();
         user = (User) getIntent().getParcelableExtra("user");
+        database = new Database(user.getId());
+        int j = 0;
     }
 
     @Override

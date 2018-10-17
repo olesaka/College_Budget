@@ -36,7 +36,6 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     SignInButton signInButton;
-    private Button signOut;
     private FirebaseAuth mAuth;
     private final static int RC_SIGN_IN = 2;
     private static final String TAG = "SignInActivity";
@@ -57,14 +56,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         signInButton = findViewById((R.id.googleButton));
         findViewById(R.id.googleButton).setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
-        signOut = findViewById(R.id.SignOut);
-        findViewById(R.id.SignOut).setOnClickListener(this);
-        // Write a message to the database
-        //FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //DatabaseReference myRef = database.getReference("message");
-
-        //myRef.setValue("yes, yes, yes!!!");
-        //writeNewUser("6473", "Tim", "yes@no.com", 18);
     }
 
 
@@ -102,12 +93,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser googleUser = mAuth.getCurrentUser();
-                            User user = new User(googleUser.getUid(), mAuth, mGoogleSignInClient);
-                            DatabaseReference userIdRef = GetFirebaseReference(user.getId(), googleUser.getDisplayName());
-                            signOut.setVisibility(View.VISIBLE);
-//                            Intent intent = new Intent(MainActivity.this, HomePage.class);
-//                            intent.putExtra("user", user);
-//                            startActivity(intent);
+                            DatabaseReference userIdRef = GetFirebaseReference(googleUser.getUid(), googleUser.getDisplayName());
+                            User user = new User(googleUser.getUid(), mAuth, mGoogleSignInClient, userIdRef);
+                            Intent intent = new Intent(MainActivity.this, HomePage.class);
+                            intent.putExtra("user", (Parcelable)user);
+                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -127,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.SignOut:
                 mAuth.signOut();
                 mGoogleSignInClient.signOut();
-                signOut.setVisibility(View.GONE);
                 break;
         }
     }
