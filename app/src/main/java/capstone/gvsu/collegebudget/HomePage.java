@@ -1,9 +1,14 @@
 package capstone.gvsu.collegebudget;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,12 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class HomePage extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private User user;
     private Database database;
+    private String categoryName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +44,7 @@ public class HomePage extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);Intent i = getIntent();
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
-        int j = 0;
+        findViewById(R.id.AddCategory).setOnClickListener(this);
     }
 
     @Override
@@ -96,4 +103,41 @@ public class HomePage extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.AddCategory:
+                addCategory();
+                break;
+        }
+    }
+
+    public void addCategory(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Category Name");
+        final EditText inputOne = new EditText(this);
+        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(inputOne);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                categoryName = inputOne.getText().toString();
+                database.addNewCategory(categoryName);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    public void addTransaction(String categoryName, int amount){
+        database.addNewTransaction(categoryName, amount);
+    }
+
+
 }

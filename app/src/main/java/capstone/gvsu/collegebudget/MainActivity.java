@@ -114,10 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.googleButton:
                 signIn();
                 break;
-            case R.id.SignOut:
-                mAuth.signOut();
-                mGoogleSignInClient.signOut();
-                break;
+                //mAuth.signOut();
+                //mGoogleSignInClient.signOut();
         }
     }
 
@@ -129,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()) {
                     //create new user
-                    userIdRef.setValue(displayName);
+                    userIdRef.setValue("");
                 }
             }
 

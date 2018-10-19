@@ -8,4 +8,13 @@
     tools:context=".HomePage"
     tools:showIn="@layout/app_bar_home_page">
     <include layout="@layout/budget_scrollview" />
+
+    <Button
+        android:id="@+id/AddCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Category +"
+        tools:layout_editor_absoluteX="240dp"
+        tools:layout_editor_absoluteY="65dp" />
+
 </android.support.constraint.ConstraintLayout>
