@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -19,6 +20,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -44,6 +53,7 @@ public class HomePage extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);Intent i = getIntent();
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
+        setAllCategories();
         findViewById(R.id.AddCategory).setOnClickListener(this);
         int j = 0;
     }
@@ -140,5 +150,25 @@ public class HomePage extends AppCompatActivity
         database.addNewTransaction(categoryName, amount);
     }
 
+    public void setAllCategories() {
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<String> cat = new ArrayList<>();
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    cat.add(child.getKey());
+                }
+                TextView view = (TextView)findViewById(R.id.textView2);
+                view.setText(cat.get(0));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        DatabaseReference categoryRef = database.getUserIdRef().child("Category");
+        categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
 
 }

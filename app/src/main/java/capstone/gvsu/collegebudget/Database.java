@@ -23,7 +23,10 @@ public class Database {
         this.userIdRef = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
         this.categories = new ArrayList<>();
         CheckForCategoryChild();
-        setAllCategories();
+    }
+
+    public DatabaseReference getUserIdRef() {
+        return this.userIdRef;
     }
 
     public void CheckForCategoryChild(){
@@ -62,24 +65,5 @@ public class Database {
     public void setIncome(int income){
         DatabaseReference incomeRef = userIdRef.child("Income");
         incomeRef.setValue(income);
-    }
-
-
-    public void setAllCategories() {
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    categories.add(child.getKey());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        DatabaseReference categoryRef = userIdRef.child("Category");
-        categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 }
