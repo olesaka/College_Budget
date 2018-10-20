@@ -19,11 +19,11 @@ public class Database {
     private DatabaseReference userCategory;
     private ArrayList<String> categories;
 
-    public Database(String id){
+    public Database(String id) {
         this.userIdRef = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
-        this.categories = new ArrayList<String>();
+        this.categories = new ArrayList<>();
         CheckForCategoryChild();
-        GetAllCategories();
+        setAllCategories();
     }
 
     public void CheckForCategoryChild(){
@@ -65,14 +65,12 @@ public class Database {
     }
 
 
-    public void GetAllCategories(){
+    public void setAllCategories() {
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChildren()) {
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        categories.add(child.getKey());
-                    }
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    categories.add(child.getKey());
                 }
             }
 

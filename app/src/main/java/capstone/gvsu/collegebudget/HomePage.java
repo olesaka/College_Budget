@@ -45,6 +45,7 @@ public class HomePage extends AppCompatActivity
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
         findViewById(R.id.AddCategory).setOnClickListener(this);
+        int j = 0;
     }
 
     @Override
