@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +38,7 @@ public class HomePage extends AppCompatActivity
     private User user;
     private Database database;
     private String categoryName;
+    private LinearLayout linLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +54,12 @@ public class HomePage extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);Intent i = getIntent();
+        navigationView.setNavigationItemSelectedListener(this);
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
         setAllCategories();
         findViewById(R.id.AddCategory).setOnClickListener(this);
+        linLayout = findViewById(R.id.linLayout);
         int j = 0;
     }
 
@@ -135,6 +140,9 @@ public class HomePage extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
+                Button categoryButton = new Button(HomePage.this);
+                categoryButton.setText(categoryName);
+                linLayout.addView(categoryButton);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -156,10 +164,13 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<String> cat = new ArrayList<>();
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    cat.add(child.getKey());
+                    Button categoryButton = new Button(HomePage.this);
+                    categoryButton.setId(0);
+                    categoryButton.setText(child.getKey());
+                    linLayout.addView(categoryButton);
+                    //Dynamically create a new panel/container for each category to
+                    //appear on the home screen
                 }
-                TextView view = (TextView)findViewById(R.id.textView2);
-                view.setText(cat.get(0));
             }
 
             @Override
@@ -169,6 +180,12 @@ public class HomePage extends AppCompatActivity
         };
         DatabaseReference categoryRef = database.getUserIdRef().child("Category");
         categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void showTransactions(String categoryName){
+        Intent intent = new Intent(HomePage.this, Transactions.class);
+        intent.putExtra("categoryName", categoryName);
+        startActivity(intent);
     }
 
 }
