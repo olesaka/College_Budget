@@ -133,11 +133,6 @@ public class HomePage extends AppCompatActivity
             addCategory();
             return;
         }
-        for(int i=1; i<categories.size(); i++){
-            if(v.getId()==i){
-                moveToTransactionsActivity(categories.get(i-1));
-            }
-        }
     }
 
     public void addCategory(){
@@ -152,7 +147,17 @@ public class HomePage extends AppCompatActivity
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
                 Button categoryButton = new Button(HomePage.this);
-                categoryButton.setOnClickListener(HomePage.this);
+                categoryButton.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+                        for(int i=0; i<categories.size(); i++){
+                            if(v.getId()==i){
+                                moveToTransactionsActivity(categories.get(i-1));
+                            }
+                        }
+                    }
+                });
                 categoryButton.setText(categoryName);
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
                 linLayout.addView(categoryButton);
