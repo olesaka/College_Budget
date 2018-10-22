@@ -147,17 +147,6 @@ public class HomePage extends AppCompatActivity
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
                 Button categoryButton = new Button(HomePage.this);
-                categoryButton.setOnClickListener(new View.OnClickListener(){
-
-                    @Override
-                    public void onClick(View v) {
-                        for(int i=0; i<categories.size(); i++){
-                            if(v.getId()==i){
-                                moveToTransactionsActivity(categories.get(i-1));
-                            }
-                        }
-                    }
-                });
                 categoryButton.setText(categoryName);
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
                 linLayout.addView(categoryButton);
@@ -185,6 +174,17 @@ public class HomePage extends AppCompatActivity
                 int i=0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Button categoryButton = new Button(HomePage.this);
+                    categoryButton.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            for(int i=0; i<categories.size(); i++){
+                                if(v.getId()==i){
+                                    moveToTransactionsActivity(categories.get(i-1));
+                                }
+                            }
+                        }
+                    });
                     categoryButton.setId(i+1);
                     categories.add(child.getKey());
                     categoryButton.setText(child.getKey());
