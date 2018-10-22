@@ -206,7 +206,6 @@ public class HomePage extends AppCompatActivity
     }
 
     public void moveToTransactionsActivity(String categoryName){
-
         Intent intent = new Intent(HomePage.this, Transactions.class);
         intent.putExtra("id", user.getId());
         intent.putExtra("categoryName", categoryName);
