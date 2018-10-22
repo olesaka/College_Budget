@@ -1,22 +1,41 @@
 package capstone.gvsu.collegebudget;
 
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class HomePage extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private User user;
+    private Database database;
+    private String categoryName;
+    private LinearLayout linLayout;
+    private Button addCategory;
+    private ArrayList<String> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +53,14 @@ public class HomePage extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         user = (User) getIntent().getParcelableExtra("user");
+        database = new Database(user.getId());
+        refreshHomePage();
+        addCategory = new Button(HomePage.this);
+        addCategory.setText("Category +");
+        addCategory.setId(0);
+        addCategory.setOnClickListener(this);
+        linLayout = findViewById(R.id.linLayout);
+        categories = new ArrayList<>();
     }
 
     @Override
@@ -91,5 +118,95 @@ public class HomePage extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == 0){
+            addCategory();
+            return;
+        }
+    }
+
+    public void addCategory(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Category Name");
+        final EditText inputOne = new EditText(this);
+        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(inputOne);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                categoryName = inputOne.getText().toString();
+                database.addNewCategory(categoryName);
+                Button categoryButton = new Button(HomePage.this);
+                categoryButton.setText(categoryName);
+                linLayout.removeViewAt(linLayout.getChildCount()-1);
+                linLayout.addView(categoryButton);
+                linLayout.addView(addCategory);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    public void addTransaction(String categoryName, int amount){
+        database.addNewTransaction(categoryName, amount);
+    }
+
+    public void refreshHomePage() {
+        ValueEventListener eventListener = new ValueEventListener() {
+            @SuppressLint("ResourceType")
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int i=0;
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    Button categoryButton = new Button(HomePage.this);
+                    categoryButton.setOnClickListener(new View.OnClickListener(){
+
+                        @Override
+                        public void onClick(View v) {
+                            for(int i=0; i<categories.size(); i++){
+                                if(v.getId()==i){
+                                    moveToTransactionsActivity(categories.get(i-1));
+                                }
+                            }
+                        }
+                    });
+                    categoryButton.setId(i+1);
+                    categories.add(child.getKey());
+                    categoryButton.setText(child.getKey());
+                    linLayout.addView(categoryButton);
+                    //Dynamically create a new panel/container for each category to
+                    //appear on the home screen
+                }
+                linLayout.addView(addCategory);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        DatabaseReference categoryRef = database.getUserIdRef().child("Category");
+        categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void showTransactions(String categoryName){
+        Intent intent = new Intent(HomePage.this, Transactions.class);
+        intent.putExtra("categoryName", categoryName);
+        startActivity(intent);
+    }
+
+    public void moveToTransactionsActivity(String categoryName){
+        Intent intent = new Intent(HomePage.this, Transactions.class);
+        intent.putExtra("id", user.getId());
+        intent.putExtra("categoryName", categoryName);
+        startActivity(intent);
     }
 }
