@@ -1,5 +1,6 @@
 package capstone.gvsu.collegebudget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -39,6 +41,8 @@ public class HomePage extends AppCompatActivity
     private Database database;
     private String categoryName;
     private LinearLayout linLayout;
+    private Button addCategory;
+    private ArrayList<String> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +61,13 @@ public class HomePage extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
-        setAllCategories();
-        findViewById(R.id.AddCategory).setOnClickListener(this);
+        refreshHomePage();
+        addCategory = new Button(HomePage.this);
+        addCategory.setText("Category +");
+        addCategory.setId(0);
+        addCategory.setOnClickListener(this);
         linLayout = findViewById(R.id.linLayout);
-        int j = 0;
+        categories = new ArrayList<>();
     }
 
     @Override
@@ -122,10 +129,14 @@ public class HomePage extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.AddCategory:
-                addCategory();
-                break;
+        if(v.getId() == 0){
+            addCategory();
+            return;
+        }
+        for(int i=1; i<categories.size(); i++){
+            if(v.getId()==i){
+                moveToTransactionsActivity(categories.get(i-1));
+            }
         }
     }
 
@@ -141,8 +152,11 @@ public class HomePage extends AppCompatActivity
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
                 Button categoryButton = new Button(HomePage.this);
+                categoryButton.setOnClickListener(HomePage.this);
                 categoryButton.setText(categoryName);
+                linLayout.removeViewAt(linLayout.getChildCount()-1);
                 linLayout.addView(categoryButton);
+                linLayout.addView(addCategory);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -158,19 +172,22 @@ public class HomePage extends AppCompatActivity
         database.addNewTransaction(categoryName, amount);
     }
 
-    public void setAllCategories() {
+    public void refreshHomePage() {
         ValueEventListener eventListener = new ValueEventListener() {
+            @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<String> cat = new ArrayList<>();
+                int i=0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     Button categoryButton = new Button(HomePage.this);
-                    categoryButton.setId(0);
+                    categoryButton.setId(i+1);
+                    categories.add(child.getKey());
                     categoryButton.setText(child.getKey());
                     linLayout.addView(categoryButton);
                     //Dynamically create a new panel/container for each category to
                     //appear on the home screen
                 }
+                linLayout.addView(addCategory);
             }
 
             @Override
@@ -188,4 +205,11 @@ public class HomePage extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void moveToTransactionsActivity(String categoryName){
+
+        Intent intent = new Intent(HomePage.this, Transactions.class);
+        intent.putExtra("id", user.getId());
+        intent.putExtra("categoryName", categoryName);
+        startActivity(intent);
+    }
 }
