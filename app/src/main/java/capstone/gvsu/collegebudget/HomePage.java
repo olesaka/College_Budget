@@ -1,6 +1,7 @@
 package capstone.gvsu.collegebudget;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,12 +14,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +38,7 @@ public class HomePage extends AppCompatActivity
     private String categoryName;
     private LinearLayout linLayout;
     private Button addCategory;
-    private ArrayList<String> categories;
+    private ArrayList<Category> categories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class HomePage extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
         user = (User) getIntent().getParcelableExtra("user");
         database = new Database(user.getId());
         refreshHomePage();
@@ -166,22 +170,25 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int i=0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    Button categoryButton = new Button(HomePage.this);
-                    categoryButton.setOnClickListener(new View.OnClickListener(){
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    final View rowView = inflater.inflate(R.layout.budget_line, null);
+                    linLayout.addView(rowView, linLayout.getChildCount() - 1);
+                    Button editButton = new Button(HomePage.this);
+                    editButton.setOnClickListener(new View.OnClickListener(){
 
                         @Override
                         public void onClick(View v) {
                             for(int i=0; i<categories.size(); i++){
                                 if(v.getId()==i){
-                                    moveToTransactionsActivity(categories.get(i-1));
+                                    //moveToTransactionsActivity(category.edit);
                                 }
                             }
                         }
                     });
-                    categoryButton.setId(i+1);
-                    categories.add(child.getKey());
-                    categoryButton.setText(child.getKey());
-                    linLayout.addView(categoryButton);
+                    //categoryButton.setId(i+1);
+                    categories.add(new Category(child.getKey(), 0, 0, editButton));
+                    //categoryButton.setText(child.getKey());
+                    //linLayout.addView(editButton);
                     //Dynamically create a new panel/container for each category to
                     //appear on the home screen
                 }
