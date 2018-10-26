@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userIdRef.child("Groceries").setValue("");
         userIdRef.child("Gas").setValue("");
         userIdRef.child("Utilities").setValue("");
-        userIdRef.child("Rent/Mortgage").setValue("");
+        userIdRef.child("Rent:Mortgage").setValue("");
     }
 
     @Override

@@ -204,16 +204,10 @@ public class HomePage extends AppCompatActivity
         categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 
-    public void showTransactions(String categoryName){
-        Intent intent = new Intent(HomePage.this, Transactions.class);
-        intent.putExtra("categoryName", categoryName);
-        startActivity(intent);
-    }
-
     public void moveToTransactionsActivity(String categoryName){
         Intent intent = new Intent(HomePage.this, Transactions.class);
-        intent.putExtra("id", user.getId());
         intent.putExtra("categoryName", categoryName);
+        intent.putExtra("user", user);
         startActivity(intent);
     }
 }

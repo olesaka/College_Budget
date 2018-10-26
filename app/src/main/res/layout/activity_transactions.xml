@@ -17,10 +17,39 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:text="TextView"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.025"
+        app:layout_constraintHorizontal_bias="0.032"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="66dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/holo_red_dark"
+        android:text="Delete"
+        android:textColor="@android:color/background_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.017" />
+
+    <ScrollView
+        android:layout_width="368dp"
+        android:layout_height="438dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="65dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>
