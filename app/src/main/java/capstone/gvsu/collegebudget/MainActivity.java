@@ -94,10 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser googleUser = mAuth.getCurrentUser();
                             DatabaseReference userIdRef = GetFirebaseReference(googleUser.getUid(), googleUser.getDisplayName());
-                            User user = new User(googleUser.getUid(), mAuth, mGoogleSignInClient, userIdRef);
-                            Intent intent = new Intent(MainActivity.this, HomePage.class);
-                            intent.putExtra("user", (Parcelable)user);
-                            startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -128,7 +124,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(!dataSnapshot.exists()) {
                     //create new user
                     userIdRef.setValue("");
+                    addDefaultCategories(userIdRef);
+                    User user = new User(id, mAuth, mGoogleSignInClient, userIdRef, true);
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    intent.putExtra("user", (Parcelable)user);
+                    startActivity(intent);
                 }
+                User user = new User(id, mAuth, mGoogleSignInClient, userIdRef, false);
+                Intent intent = new Intent(MainActivity.this, HomePage.class);
+                intent.putExtra("user", (Parcelable)user);
+                startActivity(intent);
             }
 
             @Override
@@ -136,6 +141,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         };
         userIdRef.addListenerForSingleValueEvent(eventListener);
         return userIdRef;
+    }
+
+    public void addDefaultCategories(DatabaseReference userIdRef){
+        userIdRef = userIdRef.child("Category");
+        userIdRef.child("Groceries").setValue("");
+        userIdRef.child("Gas").setValue("");
+        userIdRef.child("Utilities").setValue("");
+        userIdRef.child("Rent/Mortgage").setValue("");
     }
 
     @Override

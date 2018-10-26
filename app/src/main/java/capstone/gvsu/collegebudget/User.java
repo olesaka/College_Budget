@@ -14,12 +14,14 @@ public class User implements Parcelable {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private DatabaseReference userIdRef;
+    private boolean newUser;
 
-    public User(String id, FirebaseAuth mAuth, GoogleSignInClient mGoogleSignInClient, DatabaseReference userIdRef){
+    public User(String id, FirebaseAuth mAuth, GoogleSignInClient mGoogleSignInClient, DatabaseReference userIdRef, boolean newUser){
         this.id = id;
         this.mAuth = mAuth;
         this.mGoogleSignInClient = mGoogleSignInClient;
         this.userIdRef = userIdRef;
+        this.newUser = newUser;
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
