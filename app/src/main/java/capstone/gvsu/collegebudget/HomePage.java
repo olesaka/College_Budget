@@ -127,7 +127,7 @@ public class HomePage extends AppCompatActivity
     @Override
     public void onClick(View v) {
         if(v.getId() == 0){
-            moveToTransactionsActivity("Gas");
+            addCategory();
             return;
         }
     }
