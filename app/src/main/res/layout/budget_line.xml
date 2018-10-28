@@ -4,8 +4,8 @@
     android:layout_height="50dp"
     android:orientation="horizontal" >
 
-    <EditText
-        android:id="@+id/editName"
+    <Button
+        android:id="@+id/categoryName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -13,18 +13,18 @@
         android:inputType="textPersonName"
         android:text="@string/rowName" />
 
-    <EditText
-        android:id="@+id/editSpent"
-        android:layout_width="112dp"
+    <TextView
+        android:id="@+id/budgeted"
+        android:layout_width="91dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
         android:inputType="number"
         android:text="@string/emptyCost" />
 
-    <EditText
-        android:id="@+id/editBudget"
-        android:layout_width="107dp"
+    <TextView
+        android:id="@+id/spent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:ems="10"
@@ -32,11 +32,11 @@
         android:text="@string/emptyCost" />
 
     <Button
-        android:id="@+id/deleteRow"
+        android:id="@+id/addTransaction"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@android:drawable/ic_delete"
+        android:background="@android:drawable/ic_input_add"
         android:onClick="onDelete" />
 
 </LinearLayout>

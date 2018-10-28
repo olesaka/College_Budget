@@ -168,25 +168,24 @@ public class HomePage extends AppCompatActivity
             @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int i=0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     final View rowView = inflater.inflate(R.layout.budget_line, null);
                     linLayout.addView(rowView, linLayout.getChildCount() - 1);
-                    Button editButton = new Button(HomePage.this);
-                    editButton.setOnClickListener(new View.OnClickListener(){
+                    //Button editButton = new Button(HomePage.this);
+                    //editButton.setOnClickListener(new View.OnClickListener(){
 
-                        @Override
-                        public void onClick(View v) {
-                            for(int i=0; i<categories.size(); i++){
-                                if(v.getId()==i){
+                        //@Override
+                        //public void onClick(View v) {
+                            //for(int i=0; i<categories.size(); i++){
+                              //  if(v.getId()==i){
                                     //moveToTransactionsActivity(category.edit);
-                                }
-                            }
-                        }
-                    });
+                               // }
+                           // }
+                        //}
+                    //});
                     //categoryButton.setId(i+1);
-                    categories.add(new Category(child.getKey(), 0, 0, editButton));
+                    //categories.add(new Category(child.getKey(), 0, 0, editButton));
                     //categoryButton.setText(child.getKey());
                     //linLayout.addView(editButton);
                     //Dynamically create a new panel/container for each category to
