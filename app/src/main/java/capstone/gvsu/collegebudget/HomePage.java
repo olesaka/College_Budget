@@ -124,12 +124,15 @@ public class HomePage extends AppCompatActivity
         return true;
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onClick(View v) {
         if(v.getId() == 0){
             addCategory();
             return;
         }
+        Button btn = (Button)v;
+        moveToTransactionsActivity(btn.getText().toString());
     }
 
     public void addCategory(){
@@ -168,10 +171,18 @@ public class HomePage extends AppCompatActivity
             @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                int i=1;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     final View rowView = inflater.inflate(R.layout.budget_line, null);
                     linLayout.addView(rowView, linLayout.getChildCount() - 1);
+                    Button catButton = rowView.findViewById(R.id.categoryName);
+                    catButton.setOnClickListener(HomePage.this);
+                    catButton.setText(child.getKey());
+                    catButton.setId(i);
+                    Button addTran = rowView.findViewById(R.id.addTransaction);
+                    addTran.setOnClickListener(HomePage.this);
+                            i++;
                     //Button editButton = new Button(HomePage.this);
                     //editButton.setOnClickListener(new View.OnClickListener(){
 

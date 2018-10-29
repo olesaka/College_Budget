@@ -20,6 +20,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private User user;
     private Database database;
     private Button deleteButton;
+    private Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,8 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         textView.setText(categoryName);
         deleteButton = findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(this);
+        backButton = findViewById(R.id.back);
+        backButton.setOnClickListener(this);
     }
 
     public void deleteCategory(){
@@ -43,10 +46,19 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
+    public void back(){
+        Intent intent = new Intent(Transactions.this, HomePage.class);
+        intent.putExtra("user", (Parcelable)user);
+        startActivity(intent);
+    }
+
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.deleteButton){
             deleteCategory();
+        }
+        if(v.getId()==R.id.back){
+            back();
         }
     }
 
