@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -146,10 +145,20 @@ public class HomePage extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
-                Button categoryButton = new Button(HomePage.this);
-                categoryButton.setText(categoryName);
+                //Button categoryButton = new Button(HomePage.this);
+                //categoryButton.setText(categoryName);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View rowView = inflater.inflate(R.layout.budget_line, null);
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
-                linLayout.addView(categoryButton);
+                linLayout.addView(rowView, linLayout.getChildCount()-1);
+                Button catButton = rowView.findViewById(R.id.categoryName);
+                catButton.setOnClickListener(HomePage.this);
+                catButton.setText(categoryName);
+                catButton.setId(linLayout.getChildCount()-1);
+                Button addTran = rowView.findViewById(R.id.addTransaction);
+                addTran.setOnClickListener(HomePage.this);
+                //i++;
+                //linLayout.addView(categoryButton);
                 linLayout.addView(addCategory);
             }
         });
