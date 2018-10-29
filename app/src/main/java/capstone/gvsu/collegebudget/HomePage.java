@@ -159,7 +159,7 @@ public class HomePage extends AppCompatActivity
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View rowView = inflater.inflate(R.layout.budget_line, null);
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
-                linLayout.addView(rowView, linLayout.getChildCount()-1);
+                linLayout.addView(rowView);
                 Button catButton = rowView.findViewById(R.id.categoryName);
                 catButton.setOnClickListener(HomePage.this);
                 catButton.setText(categoryName);
