@@ -22,7 +22,11 @@ public class Database {
     public Database(String id) {
         this.userIdRef = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
         this.categories = new ArrayList<>();
-        CheckForCategoryChild();
+        //CheckForCategoryChild();
+    }
+
+    public Database(DatabaseReference userRef){
+        this.userIdRef = userRef;
     }
 
     public DatabaseReference getUserIdRef() {
@@ -56,13 +60,13 @@ public class Database {
         userIdRef.child("Category").child(categoryName).child("BudgetAmount").setValue(budgetAmount);
     }
 
-    public void addNewTransaction(String categoryName, int amount){
+    public void addNewTransaction(String categoryName, Double amount){
         String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
         DatabaseReference transRef = userIdRef.child("Category").child(categoryName).child("Transactions").child(timeStamp);
         transRef.setValue(amount);
     }
 
-    public void setIncome(int income){
+    public void setIncome(Double income){
         DatabaseReference incomeRef = userIdRef.child("Income");
         incomeRef.setValue(income);
     }

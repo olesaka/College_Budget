@@ -12,7 +12,9 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/rowName" />
+        android:text="@string/rowName"
+        android:textColor="@android:color/background_light"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/budgeted"

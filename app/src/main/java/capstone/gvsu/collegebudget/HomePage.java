@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +40,7 @@ public class HomePage extends AppCompatActivity
     private LinearLayout linLayout;
     private Button addCategory;
     private ArrayList<Category> categories;
+    private TextView incomeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class HomePage extends AppCompatActivity
         addCategory.setOnClickListener(this);
         linLayout = findViewById(R.id.linLayout);
         categories = new ArrayList<>();
+        incomeText = findViewById(R.id.incomeAmount);
     }
 
     @Override
@@ -131,7 +135,12 @@ public class HomePage extends AppCompatActivity
             return;
         }
         Button btn = (Button)v;
-        moveToTransactionsActivity(btn.getText().toString());
+        if(btn.getText()!=""){
+            moveToTransactionsActivity(btn.getText().toString());
+            return;
+        }
+        categoryName = btn.getTag().toString();
+        addTransaction();
     }
 
     public void addCategory(){
@@ -171,8 +180,31 @@ public class HomePage extends AppCompatActivity
         builder.show();
     }
 
-    public void addTransaction(String categoryName, int amount){
-        database.addNewTransaction(categoryName, amount);
+    public void addTransaction(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Transaction Amount");
+        final EditText inputOne = new EditText(this);
+        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(inputOne);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String amountStr = inputOne.getText().toString();
+                try{
+                    double amount = Double.parseDouble(amountStr);
+                    database.addNewTransaction(categoryName, amount);
+                }catch(NumberFormatException e){
+                    // let the user know that it was a wrong number
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     public void refreshHomePage() {
@@ -180,36 +212,19 @@ public class HomePage extends AppCompatActivity
             @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int i=1;
+                incomeText.setText(dataSnapshot.child("Income").getValue().toString());
+                dataSnapshot = dataSnapshot.child("Category");
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     final View rowView = inflater.inflate(R.layout.budget_line, null);
                     linLayout.addView(rowView, linLayout.getChildCount() - 1);
                     Button catButton = rowView.findViewById(R.id.categoryName);
                     catButton.setOnClickListener(HomePage.this);
+                    catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
                     catButton.setText(child.getKey());
-                    catButton.setId(i);
                     Button addTran = rowView.findViewById(R.id.addTransaction);
+                    addTran.setTag(child.getKey());
                     addTran.setOnClickListener(HomePage.this);
-                            i++;
-                    //Button editButton = new Button(HomePage.this);
-                    //editButton.setOnClickListener(new View.OnClickListener(){
-
-                        //@Override
-                        //public void onClick(View v) {
-                            //for(int i=0; i<categories.size(); i++){
-                              //  if(v.getId()==i){
-                                    //moveToTransactionsActivity(category.edit);
-                               // }
-                           // }
-                        //}
-                    //});
-                    //categoryButton.setId(i+1);
-                    //categories.add(new Category(child.getKey(), 0, 0, editButton));
-                    //categoryButton.setText(child.getKey());
-                    //linLayout.addView(editButton);
-                    //Dynamically create a new panel/container for each category to
-                    //appear on the home screen
                 }
                 linLayout.addView(addCategory);
             }
@@ -219,8 +234,23 @@ public class HomePage extends AppCompatActivity
 
             }
         };
-        DatabaseReference categoryRef = database.getUserIdRef().child("Category");
+        DatabaseReference categoryRef = database.getUserIdRef();
         categoryRef.addListenerForSingleValueEvent(eventListener);
+
+        ValueEventListener incomeEvent = new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot){
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        DatabaseReference income = database.getUserIdRef().child("Income");
+        categoryRef.addListenerForSingleValueEvent(incomeEvent);
     }
 
     public void moveToTransactionsActivity(String categoryName){

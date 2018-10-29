@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(!dataSnapshot.exists()) {
                     //create new user
                     userIdRef.setValue("");
-                    addDefaultCategories(userIdRef);
+                    addDefaults(userIdRef);
                     User user = new User(id, mAuth, mGoogleSignInClient, userIdRef, true);
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtra("user", (Parcelable)user);
@@ -143,12 +143,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return userIdRef;
     }
 
-    public void addDefaultCategories(DatabaseReference userIdRef){
-        userIdRef = userIdRef.child("Category");
-        userIdRef.child("Groceries").setValue("");
-        userIdRef.child("Gas").setValue("");
-        userIdRef.child("Utilities").setValue("");
-        userIdRef.child("Rent:Mortgage").setValue("");
+    public void addDefaults(DatabaseReference userIdRef){
+        Database database = new Database(userIdRef);
+        database.addNewCategory("Groceries");
+        database.addNewCategory("Gas");
+        database.addNewCategory("Utilities");
+        database.addNewCategory("Rent:Mortgage");
+        database.setIncome(0.0);
     }
 
     @Override
