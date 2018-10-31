@@ -181,15 +181,33 @@ public class HomePage extends AppCompatActivity
     }
 
     public void addTransaction(){
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Add a TextView here for the "Description" label
+        final EditText descriptionBox = new EditText(this);
+        descriptionBox.setHint("Description");
+        layout.addView(descriptionBox);
+
+        // Add another TextView here for the "Amount" label
+        final EditText amountBox = new EditText(this);
+        amountBox.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL); //for decimal numbers
+        amountBox.setHint("$0.00");
+        layout.addView(amountBox); // Another add method
+
+
+
+
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Transaction Amount");
-        final EditText inputOne = new EditText(this);
-        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(inputOne);
+        builder.setTitle("Add Transaction");
+        builder.setView(layout);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String amountStr = inputOne.getText().toString();
+                String amountStr = amountBox.getText().toString();
+                String descStr = descriptionBox.getText().toString();
                 try{
                     double amount = Double.parseDouble(amountStr);
                     database.addNewTransaction(categoryName, amount);
