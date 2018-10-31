@@ -232,19 +232,7 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 incomeText.setText(dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    final View rowView = inflater.inflate(R.layout.budget_line, null);
-                    linLayout.addView(rowView, linLayout.getChildCount() - 1);
-                    Button catButton = rowView.findViewById(R.id.categoryName);
-                    catButton.setOnClickListener(HomePage.this);
-                    catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
-                    catButton.setText(child.getKey());
-                    Button addTran = rowView.findViewById(R.id.addTransaction);
-                    addTran.setTag(child.getKey());
-                    addTran.setOnClickListener(HomePage.this);
-                }
-                linLayout.addView(addCategory);
+                setCategoryInformation(dataSnapshot);
             }
 
             @Override
@@ -254,6 +242,51 @@ public class HomePage extends AppCompatActivity
         };
         DatabaseReference categoryRef = database.getUserIdRef();
         categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void setCategoryInformation(DataSnapshot dataSnapshot){
+        double totalBudgeted = 0.0;
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View rowView = inflater.inflate(R.layout.budget_line, null);
+            linLayout.addView(rowView, linLayout.getChildCount() - 1);
+            setCategoryButton(rowView, child);
+            setBudgetedSection(rowView, child);
+            setSpentSection(rowView, child);
+            setTransactionButton(rowView, child);
+        }
+        linLayout.addView(addCategory);
+    }
+
+    public void setCategoryButton(View rowView, DataSnapshot child){
+        Button catButton = rowView.findViewById(R.id.categoryName);
+        catButton.setOnClickListener(HomePage.this);
+        catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
+        catButton.setText(child.getKey());
+    }
+
+    public double setBudgetedSection(View rowView, DataSnapshot child){
+        TextView budgetText = rowView.findViewById(R.id.budgeted);
+        double budget = Double.parseDouble(child.child("Budgeted").getValue().toString());
+        budgetText.setText(Double.toString(budget));
+        return budget;
+    }
+
+    public double setSpentSection(View rowView, DataSnapshot child){
+        TextView budgetText = rowView.findViewById(R.id.budgeted);
+        child = child.child("Transactions");
+        double totalSpent = 0.0;
+        for(DataSnapshot transChild : child.getChildren()){
+            totalSpent += Double.parseDouble(transChild.getValue().toString());
+        }
+        budgetText.setText(Double.toString(totalSpent));
+        return totalSpent;
+    }
+
+    public void setTransactionButton(View rowView, DataSnapshot child){
+        Button addTran = rowView.findViewById(R.id.addTransaction);
+        addTran.setTag(child.getKey());
+        addTran.setOnClickListener(HomePage.this);
     }
 
     public void moveToTransactionsActivity(String categoryName){
