@@ -41,6 +41,7 @@ public class HomePage extends AppCompatActivity
     private Button addCategory;
     private ArrayList<Category> categories;
     private TextView incomeText;
+    private TextView budgetedText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class HomePage extends AppCompatActivity
         linLayout = findViewById(R.id.linLayout);
         categories = new ArrayList<>();
         incomeText = findViewById(R.id.incomeAmount);
+        budgetedText = findViewById(R.id.budgetAmount);
     }
 
     @Override
@@ -232,7 +234,8 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 incomeText.setText(dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
-                setCategoryInformation(dataSnapshot);
+                double totalBudgeted = setCategoryInformation(dataSnapshot);
+                budgetedText.setText(Double.toString(totalBudgeted));
             }
 
             @Override
@@ -244,7 +247,7 @@ public class HomePage extends AppCompatActivity
         categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 
-    public void setCategoryInformation(DataSnapshot dataSnapshot){
+    public double setCategoryInformation(DataSnapshot dataSnapshot){
         double totalBudgeted = 0.0;
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -252,10 +255,11 @@ public class HomePage extends AppCompatActivity
             linLayout.addView(rowView, linLayout.getChildCount() - 1);
             setCategoryButton(rowView, child);
             setBudgetedSection(rowView, child);
-            setSpentSection(rowView, child);
+            totalBudgeted += setSpentSection(rowView, child);
             setTransactionButton(rowView, child);
         }
         linLayout.addView(addCategory);
+        return totalBudgeted;
     }
 
     public void setCategoryButton(View rowView, DataSnapshot child){
@@ -273,13 +277,13 @@ public class HomePage extends AppCompatActivity
     }
 
     public double setSpentSection(View rowView, DataSnapshot child){
-        TextView budgetText = rowView.findViewById(R.id.budgeted);
+        TextView spentText = rowView.findViewById(R.id.spent);
         child = child.child("Transactions");
         double totalSpent = 0.0;
         for(DataSnapshot transChild : child.getChildren()){
             totalSpent += Double.parseDouble(transChild.getValue().toString());
         }
-        budgetText.setText(Double.toString(totalSpent));
+        spentText.setText(Double.toString(totalSpent));
         return totalSpent;
     }
 
