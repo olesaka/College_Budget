@@ -9,14 +9,14 @@ public class Category {
     private double budgeted;
     private String name;
     private Button editButton;
-    private ArrayList transactionHistory;
+    private ArrayList<Transactions> transactionHistory;
 
     public Category(String name, double spent, double budgeted, Button editButton) {
         this.spent = spent;
         this.budgeted = budgeted;
         this.name = name;
         this.editButton = editButton;
-        this.transactionHistory = new ArrayList();
+        this.transactionHistory = new ArrayList<Transactions>();
     }
     public void setName(String name) {
         this.name = name;
@@ -27,7 +27,7 @@ public class Category {
     public void setBudgeted(double budgeted) {
         this.budgeted = budgeted;
     }
-    public void setTransactionHistory(ArrayList th){
+    public void setTransactionHistory(ArrayList<Transactions> th){
         this.transactionHistory = th;
     }
 
