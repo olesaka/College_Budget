@@ -42,6 +42,8 @@ public class HomePage extends AppCompatActivity
     private ArrayList<Category> categories;
     private TextView incomeText;
     private TextView budgetedText;
+    private TextView spentText;
+    private TextView leftAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class HomePage extends AppCompatActivity
         categories = new ArrayList<>();
         incomeText = findViewById(R.id.incomeAmount);
         budgetedText = findViewById(R.id.budgetAmount);
+        spentText = findViewById(R.id.spentAmount);
+        leftAmount = findViewById(R.id.leftAmount);
     }
 
     @Override
@@ -199,16 +203,13 @@ public class HomePage extends AppCompatActivity
         amountBox.setHint("$0.00");
         layout.addView(amountBox); // Another add method
 
-
-
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Transaction");
         builder.setView(layout);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                double totalSpent = Double.parseDouble(findViewById(R.id.spentAmount).toString());
                 String amountStr = amountBox.getText().toString();
                 String descStr = descriptionBox.getText().toString();
                 try{
@@ -235,8 +236,10 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 incomeText.setText(dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
-                double totalBudgeted = setCategoryInformation(dataSnapshot);
-                budgetedText.setText(Double.toString(totalBudgeted));
+                double totalSpent = setCategoryInformation(dataSnapshot);
+                spentText.setText(Double.toString(totalSpent));
+                double budgeted = Double.parseDouble((String) budgetedText.getText());
+                leftAmount.setText(Double.toString(budgeted - totalSpent));
             }
 
             @Override
@@ -249,18 +252,20 @@ public class HomePage extends AppCompatActivity
     }
 
     public double setCategoryInformation(DataSnapshot dataSnapshot){
+        double totalSpent = 0.0;
         double totalBudgeted = 0.0;
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View rowView = inflater.inflate(R.layout.budget_line, null);
             linLayout.addView(rowView, linLayout.getChildCount() - 1);
             setCategoryButton(rowView, child);
-            setBudgetedSection(rowView, child);
-            totalBudgeted += setSpentSection(rowView, child);
+            totalBudgeted += setBudgetedSection(rowView, child);
+            totalSpent += setSpentSection(rowView, child);
             setTransactionButton(rowView, child);
         }
         linLayout.addView(addCategory);
-        return totalBudgeted;
+        budgetedText.setText(Double.toString(totalBudgeted));
+        return totalSpent;
     }
 
     public void setCategoryButton(View rowView, DataSnapshot child){
