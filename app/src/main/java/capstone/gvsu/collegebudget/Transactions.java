@@ -1,14 +1,18 @@
 package capstone.gvsu.collegebudget;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +29,9 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private Button deleteButton;
     private Button backButton;
     private LinearLayout linLayout;
+    private TextView budgeted;
+    private TextView spent;
+    private Button budgetedButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,10 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         backButton = findViewById(R.id.back);
         backButton.setOnClickListener(this);
         linLayout = findViewById(R.id.transLayout);
+        budgeted = findViewById(R.id.budgetedAmountText);
+        spent = findViewById(R.id.spentAmountText);
+        budgetedButton = findViewById(R.id.budgetedButton);
+        budgetedButton.setOnClickListener(this);
     }
 
     public void deleteCategory(){
@@ -62,6 +73,9 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         if(v.getId()==R.id.deleteButton){
             deleteCategory();
         }
+        if(v.getId()==R.id.budgetedButton){
+            setCategoryBudget();
+        }
         if(v.getId()==R.id.back){
             back();
         }
@@ -72,13 +86,20 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                budgeted.setText(dataSnapshot.child("Budgeted").getValue().toString());
+                dataSnapshot = dataSnapshot.child("Transactions");
+                Double totalSpent = 0.0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
                     LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     final View rowView = inflater.inflate(R.layout.transaction_line, null);
                     linLayout.addView(rowView, linLayout.getChildCount() - 1);
-                    String date = child.getKey();
-                    String amount = "$" + child.getValue();
+                    TextView dateText = rowView.findViewById(R.id.date);
+                    totalSpent += Double.parseDouble(child.getValue().toString());
+                    dateText.setText(getFormattedDate(child.getKey().toString()));
+                    TextView amountText = rowView.findViewById(R.id.amount);
+                    amountText.setText(child.getValue().toString());
                 }
+                spent.setText(totalSpent.toString());
             }
 
             @Override
@@ -86,7 +107,34 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
 
             }
         };
-        DatabaseReference transRef = database.getUserIdRef().child("Category").child(categoryName).child("Transactions");
+        DatabaseReference transRef = database.getUserIdRef().child("Category").child(categoryName);
         transRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public String getFormattedDate(String date){
+        return date.substring(4, 6) + "/" + date.substring(6, 8) + "/" + date.substring(0, 4);
+    }
+
+    public void setCategoryBudget(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Category Budget Amount");
+        final EditText inputOne = new EditText(this);
+        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(inputOne);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String amountStr = inputOne.getText().toString();
+                database.getUserIdRef().child("Category").child(categoryName).child("Budgeted").setValue(amountStr);
+                budgeted.setText(amountStr);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }

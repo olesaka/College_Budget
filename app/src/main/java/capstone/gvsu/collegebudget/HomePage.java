@@ -236,21 +236,6 @@ public class HomePage extends AppCompatActivity
         };
         DatabaseReference categoryRef = database.getUserIdRef();
         categoryRef.addListenerForSingleValueEvent(eventListener);
-
-        ValueEventListener incomeEvent = new ValueEventListener(){
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot){
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-        DatabaseReference income = database.getUserIdRef().child("Income");
-        categoryRef.addListenerForSingleValueEvent(incomeEvent);
     }
 
     public void moveToTransactionsActivity(String categoryName){

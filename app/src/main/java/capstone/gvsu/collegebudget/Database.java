@@ -54,6 +54,8 @@ public class Database {
 
     public void addNewCategory(String categoryName){
         userIdRef.child("Category").child(categoryName).setValue("");
+        userIdRef.child("Category").child(categoryName).child("Transactions").setValue("");
+        userIdRef.child("Category").child(categoryName).child("Budgeted").setValue("0");
     }
 
     public void addCategoryBudget(String categoryName, int budgetAmount){
