@@ -161,6 +161,7 @@ public class HomePage extends AppCompatActivity
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
                 linLayout.addView(rowView);
                 Button catButton = rowView.findViewById(R.id.categoryName);
+                catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
                 catButton.setOnClickListener(HomePage.this);
                 catButton.setText(categoryName);
                 catButton.setId(linLayout.getChildCount()-1);
