@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:ems="10"
-        android:gravity="right|center_vertical"
+        android:gravity="center"
         android:inputType="number"
         android:text="@string/emptyCost" />
 
@@ -32,7 +32,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:ems="10"
-        android:gravity="right|center_vertical"
+        android:gravity="center"
         android:inputType="number"
         android:text="@string/emptyCost" />
 

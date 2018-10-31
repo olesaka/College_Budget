@@ -6,14 +6,14 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/date"
+        android:id="@+id/category"
         android:layout_width="127dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:ems="10"
-        android:gravity="left|center_vertical"
-        android:inputType="number"
-        android:text="@string/emptyCost" />
+        android:gravity="center"
+        android:inputType="text"
+        android:text="Category" />
 
     <TextView
         android:id="@+id/amount"
@@ -21,8 +21,18 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:ems="10"
-        android:gravity="right|center_vertical"
+        android:gravity="center"
         android:inputType="number"
         android:text="@string/emptyCost" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="127dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="date"
+        android:text="Date" />
 
 </LinearLayout>
