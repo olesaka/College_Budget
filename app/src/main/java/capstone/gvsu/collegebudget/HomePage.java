@@ -209,12 +209,14 @@ public class HomePage extends AppCompatActivity
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                double totalSpent = Double.parseDouble(findViewById(R.id.spentAmount).toString());
-                String amountStr = amountBox.getText().toString();
-                String descStr = descriptionBox.getText().toString();
                 try{
+                    double totalSpent = Double.parseDouble(spentText.getText().toString());
+                    String amountStr = amountBox.getText().toString();
+                    String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
                     database.addNewTransaction(categoryName, amount);
+                    spentText.setText(Double.toString(totalSpent + amount));
+                    refreshHomePage();
                 }catch(NumberFormatException e){
                     // let the user know that it was a wrong number
                 }
