@@ -62,9 +62,9 @@ public class Database {
         userIdRef.child("Category").child(categoryName).child("BudgetAmount").setValue(budgetAmount);
     }
 
-    public void addNewTransaction(String categoryName, Double amount){
-        String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-        DatabaseReference transRef = userIdRef.child("Category").child(categoryName).child("Transactions").child(timeStamp);
+    public void addNewTransaction(String categoryName, Double amount, String description){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+        DatabaseReference transRef = userIdRef.child("Category").child(categoryName).child("Transactions").child(timeStamp).child(description);
         transRef.setValue(amount);
     }
 

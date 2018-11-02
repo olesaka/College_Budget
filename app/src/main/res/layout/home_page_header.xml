@@ -14,8 +14,9 @@
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
+        android:background="@color/colorPrimary"
         android:text="Income"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/background_light"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -89,20 +89,25 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                budgeted.setText(dataSnapshot.child("Budgeted").getValue().toString());
+                budgeted.setText("$" + dataSnapshot.child("Budgeted").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Transactions");
                 Double totalSpent = 0.0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    final View rowView = inflater.inflate(R.layout.transaction_line, null);
-                    linLayout.addView(rowView, linLayout.getChildCount() - 1);
-                    TextView dateText = rowView.findViewById(R.id.date);
-                    totalSpent += Double.parseDouble(child.getValue().toString());
-                    dateText.setText(getFormattedDate(child.getKey().toString()));
-                    TextView amountText = rowView.findViewById(R.id.amount);
-                    amountText.setText(child.getValue().toString());
+                    String date = getFormattedDate(child.getKey());
+                    for(DataSnapshot subChild : child.getChildren()){
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        final View rowView = inflater.inflate(R.layout.transaction_line, null);
+                        linLayout.addView(rowView, linLayout.getChildCount() - 1);
+                        TextView descriptionText = rowView.findViewById(R.id.description);
+                        descriptionText.setText(subChild.getKey());
+                        TextView dateText = rowView.findViewById(R.id.date);
+                        totalSpent += Double.parseDouble(subChild.getValue().toString());
+                        dateText.setText(date);
+                        TextView amountText = rowView.findViewById(R.id.amount);
+                        amountText.setText("$" + subChild.getValue().toString());
+                    }
                 }
-                spent.setText(totalSpent.toString());
+                spent.setText("$" + totalSpent.toString());
             }
 
             @Override
@@ -130,7 +135,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int which) {
                 String amountStr = inputOne.getText().toString();
                 database.getUserIdRef().child("Category").child(categoryName).child("Budgeted").setValue(amountStr);
-                budgeted.setText(amountStr);
+                budgeted.setText("$" + amountStr);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

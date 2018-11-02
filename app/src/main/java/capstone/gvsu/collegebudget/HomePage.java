@@ -29,7 +29,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -252,7 +254,7 @@ public class HomePage extends AppCompatActivity
                     String amountStr = amountBox.getText().toString();
                     String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
-                    database.addNewTransaction(categoryName, amount);
+                    database.addNewTransaction(categoryName, amount, descStr);
                     updateSpentAndLeft(amount);
                     lineView = getView();
                     updateCategorySpent();
@@ -287,7 +289,9 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 double total = 0.0;
                 for(DataSnapshot child : dataSnapshot.getChildren()){
-                    total += Double.parseDouble(child.getValue().toString());
+                    for(DataSnapshot subChild : child.getChildren()){
+                        total += Double.parseDouble(subChild.getValue().toString());
+                    }
                 }
                 TextView textView = lineView.findViewById(R.id.spent);
                 textView.setText(getFormattedNumber(total));
@@ -315,7 +319,7 @@ public class HomePage extends AppCompatActivity
             @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                incomeText.setText(dataSnapshot.child("Income").getValue().toString());
+                incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
                 spentText.setText(getFormattedNumber(totalSpent));
@@ -368,7 +372,9 @@ public class HomePage extends AppCompatActivity
         child = child.child("Transactions");
         double totalSpent = 0.0;
         for(DataSnapshot transChild : child.getChildren()){
-            totalSpent += Double.parseDouble(transChild.getValue().toString());
+            for(DataSnapshot subChild : transChild.getChildren()){
+                totalSpent += Double.parseDouble(subChild.getValue().toString());
+            }
         }
         spentText.setText(getFormattedNumber(totalSpent));
         return totalSpent;

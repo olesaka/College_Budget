@@ -52,7 +52,9 @@
         android:id="@+id/budgetedButton"
         android:layout_width="157dp"
         android:layout_height="45dp"
+        android:background="@color/colorPrimary"
         android:text="Budgeted"
+        android:textColor="@android:color/background_light"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></Button>
