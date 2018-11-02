@@ -45,6 +45,7 @@ public class HomePage extends AppCompatActivity
     private TextView spentText;
     private TextView leftAmount;
     private View lineView;
+    private Button incomeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,8 @@ public class HomePage extends AppCompatActivity
         budgetedText = findViewById(R.id.budgetAmount);
         spentText = findViewById(R.id.spentAmount);
         leftAmount = findViewById(R.id.leftAmount);
+        incomeButton = findViewById(R.id.incomeButton);
+        incomeButton.setOnClickListener(this);
     }
 
     @Override
@@ -137,6 +140,10 @@ public class HomePage extends AppCompatActivity
     @SuppressLint("ResourceType")
     @Override
     public void onClick(View v) {
+        if(v.getId()== R.id.incomeButton){
+            setIncome();
+            return;
+        }
         if(v.getId() == 0){
             addCategory();
             return;
@@ -148,6 +155,40 @@ public class HomePage extends AppCompatActivity
         }
         categoryName = btn.getTag().toString();
         addTransaction();
+    }
+
+    public void setIncome(){
+
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        // Add another TextView here for the "Amount" label
+        final EditText amountBox = new EditText(this);
+        amountBox.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL); //for decimal numbers
+        amountBox.setHint("$0.00");
+        layout.addView(amountBox); // Another add method
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("set Income");
+        builder.setView(layout);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try{
+                    String amountStr = amountBox.getText().toString();
+                    incomeText.setText(amountStr);
+                    database.setIncome(Double.parseDouble(amountStr));
+                }catch(NumberFormatException e){
+                    // let the user know that it was a wrong number
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     public void addCategory(){

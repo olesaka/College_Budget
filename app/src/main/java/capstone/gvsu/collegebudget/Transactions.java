@@ -72,12 +72,15 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if(v.getId()==R.id.deleteButton){
             deleteCategory();
+            return;
         }
         if(v.getId()==R.id.budgetedButton){
             setCategoryBudget();
+            return;
         }
         if(v.getId()==R.id.back){
             back();
+            return;
         }
     }
 
@@ -119,7 +122,8 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Category Budget Amount");
         final EditText inputOne = new EditText(this);
-        inputOne.setInputType(InputType.TYPE_CLASS_TEXT);
+        inputOne.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        inputOne.setHint("$0.00");
         builder.setView(inputOne);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
