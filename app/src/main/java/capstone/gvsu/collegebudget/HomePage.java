@@ -158,7 +158,6 @@ public class HomePage extends AppCompatActivity
     }
 
     public void setIncome(){
-
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         // Add another TextView here for the "Amount" label
@@ -202,8 +201,6 @@ public class HomePage extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
-                //Button categoryButton = new Button(HomePage.this);
-                //categoryButton.setText(categoryName);
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View rowView = inflater.inflate(R.layout.budget_line, null);
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
@@ -293,7 +290,7 @@ public class HomePage extends AppCompatActivity
                     total += Double.parseDouble(child.getValue().toString());
                 }
                 TextView textView = lineView.findViewById(R.id.spent);
-                textView.setText(Double.toString(total));
+                textView.setText(getFormattedNumber(total));
             }
 
             @Override
@@ -307,10 +304,10 @@ public class HomePage extends AppCompatActivity
     }
 
     public void updateSpentAndLeft(double amount){
-        double totalSpent = Double.parseDouble(spentText.getText().toString());
-        spentText.setText(Double.toString(totalSpent + amount));
-        double left = Double.parseDouble(leftAmount.getText().toString());
-        leftAmount.setText(Double.toString(left-amount));
+        double totalSpent = getDoubleFromDollar(spentText.getText().toString());
+        spentText.setText(getFormattedNumber(totalSpent + amount));
+        double left = getDoubleFromDollar(leftAmount.getText().toString());
+        leftAmount.setText(getFormattedNumber(left-amount));
     }
 
     public void refreshHomePage() {
@@ -321,9 +318,9 @@ public class HomePage extends AppCompatActivity
                 incomeText.setText(dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
-                spentText.setText(Double.toString(totalSpent));
-                double budgeted = Double.parseDouble((String) budgetedText.getText());
-                leftAmount.setText(Double.toString(budgeted - totalSpent));
+                spentText.setText(getFormattedNumber(totalSpent));
+                double budgeted = getDoubleFromDollar(budgetedText.getText().toString());
+                leftAmount.setText(getFormattedNumber(budgeted - totalSpent));
             }
 
             @Override
@@ -348,7 +345,7 @@ public class HomePage extends AppCompatActivity
             setTransactionButton(rowView, child);
         }
         linLayout.addView(addCategory);
-        budgetedText.setText(Double.toString(totalBudgeted));
+        budgetedText.setText(getFormattedNumber(totalBudgeted));
         return totalSpent;
     }
 
@@ -362,7 +359,7 @@ public class HomePage extends AppCompatActivity
     public double setBudgetedSection(View rowView, DataSnapshot child){
         TextView budgetText = rowView.findViewById(R.id.budgeted);
         double budget = Double.parseDouble(child.child("Budgeted").getValue().toString());
-        budgetText.setText(Double.toString(budget));
+        budgetText.setText(getFormattedNumber(budget));
         return budget;
     }
 
@@ -373,7 +370,7 @@ public class HomePage extends AppCompatActivity
         for(DataSnapshot transChild : child.getChildren()){
             totalSpent += Double.parseDouble(transChild.getValue().toString());
         }
-        spentText.setText(Double.toString(totalSpent));
+        spentText.setText(getFormattedNumber(totalSpent));
         return totalSpent;
     }
 
@@ -388,5 +385,17 @@ public class HomePage extends AppCompatActivity
         intent.putExtra("categoryName", categoryName);
         intent.putExtra("user", user);
         startActivity(intent);
+    }
+
+    public String getFormattedNumber(double amount){
+        String strDouble = "$" + String.format("%.2f", amount);
+        if(strDouble.substring(strDouble.length()-3, strDouble.length()-1).equals("00")){
+            return strDouble.substring(0, strDouble.length()-4);
+        }
+        return strDouble;
+    }
+
+    public double getDoubleFromDollar(String dollarAmount){
+        return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()-1));
     }
 }
