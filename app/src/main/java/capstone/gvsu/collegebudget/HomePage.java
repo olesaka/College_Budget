@@ -44,6 +44,7 @@ public class HomePage extends AppCompatActivity
     private TextView budgetedText;
     private TextView spentText;
     private TextView leftAmount;
+    private View lineView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,13 +211,13 @@ public class HomePage extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try{
-                    double totalSpent = Double.parseDouble(spentText.getText().toString());
                     String amountStr = amountBox.getText().toString();
                     String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
                     database.addNewTransaction(categoryName, amount);
-                    spentText.setText(Double.toString(totalSpent + amount));
-                    refreshHomePage();
+                    updateSpentAndLeft(amount);
+                    lineView = getView();
+                    updateCategorySpent();
                 }catch(NumberFormatException e){
                     // let the user know that it was a wrong number
                 }
@@ -229,6 +230,46 @@ public class HomePage extends AppCompatActivity
             }
         });
         builder.show();
+    }
+
+    public View getView(){
+        for(int i=0; i<linLayout.getChildCount(); i++){
+            Button btn = linLayout.getChildAt(i).findViewById(R.id.categoryName);
+            String text = btn.getText().toString();
+            if(text.equals(categoryName)){
+                return linLayout.getChildAt(i);
+            }
+        }
+        return null;
+    }
+
+    public void updateCategorySpent(){
+        ValueEventListener eventListener = new ValueEventListener(){
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                double total = 0.0;
+                for(DataSnapshot child : dataSnapshot.getChildren()){
+                    total += Double.parseDouble(child.getValue().toString());
+                }
+                TextView textView = lineView.findViewById(R.id.spent);
+                textView.setText(Double.toString(total));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        DatabaseReference categoryRef = database.getUserIdRef().child("Category").child(categoryName).child("Transactions");
+        categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void updateSpentAndLeft(double amount){
+        double totalSpent = Double.parseDouble(spentText.getText().toString());
+        spentText.setText(Double.toString(totalSpent + amount));
+        double left = Double.parseDouble(leftAmount.getText().toString());
+        leftAmount.setText(Double.toString(left-amount));
     }
 
     public void refreshHomePage() {
