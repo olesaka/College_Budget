@@ -9,15 +9,15 @@
 
     <Button
         android:id="@+id/incomeButton"
-        android:layout_width="94dp"
-        android:layout_height="41dp"
+        android:layout_width="80dp"
+        android:layout_height="31dp"
         android:layout_marginLeft="4dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:background="@color/colorPrimary"
         android:text="Income"
         android:textColor="@android:color/background_light"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,7 +30,7 @@
         android:layout_marginTop="4dp"
         android:text="720"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintStart_toEndOf="@+id/incomeButton"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,12 +38,12 @@
         android:id="@+id/budgetAmount"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="12dp"
         android:text="500"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintStart_toEndOf="@+id/budgetTextView"
         app:layout_constraintTop_toBottomOf="@+id/incomeAmount" />
 
@@ -53,9 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="Budget"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/incomeButton" />
 
@@ -63,12 +64,12 @@
         android:id="@+id/spentText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="4dp"
         android:text="Spent"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintStart_toEndOf="@+id/incomeAmount"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,29 +84,33 @@
         android:layout_marginTop="4dp"
         android:text="100"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/spentText"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/leftText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
         android:text="Left"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/budgetAmount"
-        app:layout_constraintTop_toBottomOf="@+id/spentText" />
+        app:layout_constraintTop_toBottomOf="@+id/spentText"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/leftAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -113,10 +118,46 @@
         android:layout_marginTop="12dp"
         android:text="100"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.121"
+        app:layout_constraintHorizontal_bias="0.102"
         app:layout_constraintStart_toEndOf="@+id/leftText"
-        app:layout_constraintTop_toBottomOf="@+id/spentAmount" />
+        app:layout_constraintTop_toBottomOf="@+id/spentAmount"
+        app:layout_constraintVertical_bias="0.004" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="160dp"
+        android:layout_marginStart="160dp"
+        android:layout_marginTop="8dp"
+        android:text="Budgeted"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/leftText"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Spent"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.237"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toBottomOf="@+id/leftAmount"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

@@ -104,10 +104,10 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
                         totalSpent += Double.parseDouble(subChild.getValue().toString());
                         dateText.setText(date);
                         TextView amountText = rowView.findViewById(R.id.amount);
-                        amountText.setText("$" + subChild.getValue().toString());
+                        amountText.setText(getFormattedNumber(subChild.getValue().toString()));
                     }
                 }
-                spent.setText("$" + totalSpent.toString());
+                spent.setText(getFormattedNumber(totalSpent.toString()));
             }
 
             @Override
@@ -145,5 +145,18 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
+    }
+
+    public String getFormattedNumber(double amount){
+        String strDouble = "$" + String.format("%.2f", amount);
+        if(strDouble.substring(strDouble.length()-2).equals("00")){
+            return strDouble.substring(0, strDouble.length()-3);
+        }
+        return strDouble;
+    }
+
+    public String getFormattedNumber(String str){
+        double amount = Double.parseDouble(str);
+        return getFormattedNumber(amount);
     }
 }

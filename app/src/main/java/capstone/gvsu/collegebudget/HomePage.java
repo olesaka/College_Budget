@@ -71,6 +71,7 @@ public class HomePage extends AppCompatActivity
         addCategory = new Button(HomePage.this);
         addCategory.setText("Category +");
         addCategory.setId(0);
+        addCategory.getBackground().setColorFilter(0xFF00E600, PorterDuff.Mode.MULTIPLY);
         addCategory.setOnClickListener(this);
         linLayout = findViewById(R.id.linLayout);
         categories = new ArrayList<>();
@@ -176,7 +177,7 @@ public class HomePage extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 try{
                     String amountStr = amountBox.getText().toString();
-                    incomeText.setText(amountStr);
+                    incomeText.setText(getFormattedNumber(amountStr));
                     database.setIncome(Double.parseDouble(amountStr));
                 }catch(NumberFormatException e){
                     // let the user know that it was a wrong number
@@ -213,9 +214,12 @@ public class HomePage extends AppCompatActivity
                 catButton.setText(categoryName);
                 catButton.setId(linLayout.getChildCount()-1);
                 Button addTran = rowView.findViewById(R.id.addTransaction);
+                addTran.setTag(categoryName);
                 addTran.setOnClickListener(HomePage.this);
-                //i++;
-                //linLayout.addView(categoryButton);
+                TextView budgeted = rowView.findViewById(R.id.budgeted);
+                budgeted.setText(getFormattedNumber(0.0));
+                TextView spent = rowView.findViewById(R.id.spent);
+                spent.setText(getFormattedNumber(0.0));
                 linLayout.addView(addCategory);
             }
         });
@@ -395,13 +399,18 @@ public class HomePage extends AppCompatActivity
 
     public String getFormattedNumber(double amount){
         String strDouble = "$" + String.format("%.2f", amount);
-        if(strDouble.substring(strDouble.length()-3, strDouble.length()-1).equals("00")){
-            return strDouble.substring(0, strDouble.length()-4);
+        if(strDouble.substring(strDouble.length()-2).equals("00")){
+            return strDouble.substring(0, strDouble.length()-3);
         }
         return strDouble;
     }
 
+    public String getFormattedNumber(String str){
+        double amount = Double.parseDouble(str);
+        return getFormattedNumber(amount);
+    }
+
     public double getDoubleFromDollar(String dollarAmount){
-        return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()-1));
+        return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()));
     }
 }
