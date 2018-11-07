@@ -160,4 +160,13 @@
         app:layout_constraintTop_toBottomOf="@+id/leftAmount"
         app:layout_constraintVertical_bias="1.0" />
 
+    <Spinner
+        android:id="@+id/timePeriod"
+        android:layout_width="fill_parent"
+        android:layout_height="27dp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="18dp"
+        tools:layout_editor_absoluteY="98dp" />
+
+
 </android.support.constraint.ConstraintLayout>

@@ -11,4 +11,8 @@
     <string name="emptyCost">0.00</string>
     <string name="rowName">Name</string>
     <string name="hello_blank_fragment">Blank</string>
+    <string-array name="timePeriods">
+        <item>Monthly</item>
+        <item>2 Weeks</item>
+    </string-array>
 </resources>

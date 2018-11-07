@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,9 +20,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -81,6 +84,13 @@ public class HomePage extends AppCompatActivity
         leftAmount = findViewById(R.id.leftAmount);
         incomeButton = findViewById(R.id.incomeButton);
         incomeButton.setOnClickListener(this);
+        Spinner spinner = (Spinner) findViewById(R.id.timePeriod);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.timePeriods, android.R.layout.simple_spinner_item);
+// Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+// Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
     }
 
     @Override
@@ -336,7 +346,7 @@ public class HomePage extends AppCompatActivity
 
             }
         };
-        DatabaseReference categoryRef = database.getUserIdRef();
+        DatabaseReference categoryRef = database.getUserIdRef().child("Budget");
         categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 
@@ -412,5 +422,27 @@ public class HomePage extends AppCompatActivity
 
     public double getDoubleFromDollar(String dollarAmount){
         return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()));
+    }
+
+    public void saveBudget(){
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DatabaseReference toRef = database.getUserIdRef().child("History").child("20181107");
+                toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        DatabaseReference categoryRef = database.getUserIdRef().child("Budget");
+        categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 }

@@ -53,23 +53,29 @@ public class Database {
     }
 
     public void addNewCategory(String categoryName){
-        userIdRef.child("Category").child(categoryName).setValue("");
-        userIdRef.child("Category").child(categoryName).child("Transactions").setValue("");
-        userIdRef.child("Category").child(categoryName).child("Budgeted").setValue("0");
-    }
-
-    public void addCategoryBudget(String categoryName, int budgetAmount){
-        userIdRef.child("Category").child(categoryName).child("BudgetAmount").setValue(budgetAmount);
+        userIdRef.child("Budget").child("Category").child(categoryName).setValue("");
+        userIdRef.child("Budget").child("Category").child(categoryName).child("Transactions").setValue("");
+        userIdRef.child("Budget").child("Category").child(categoryName).child("Budgeted").setValue("0");
     }
 
     public void addNewTransaction(String categoryName, Double amount, String description){
         String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        DatabaseReference transRef = userIdRef.child("Category").child(categoryName).child("Transactions").child(timeStamp).child(description);
+        DatabaseReference transRef = userIdRef.child("Budget").child("Category").child(categoryName).child("Transactions").child(timeStamp).child(description);
         transRef.setValue(amount);
     }
 
     public void setIncome(Double income){
-        DatabaseReference incomeRef = userIdRef.child("Income");
+        DatabaseReference incomeRef = userIdRef.child("Budget").child("Income");
         incomeRef.setValue(income);
+    }
+
+    public void addDefaults(DatabaseReference userIdRef){
+        addNewCategory("Groceries");
+        addNewCategory("Gas");
+        addNewCategory("Utilities");
+        addNewCategory("Rent:Mortgage");
+        setIncome(0.0);
+        DatabaseReference historyRef = userIdRef.child("History");
+        historyRef.setValue("");
     }
 }
