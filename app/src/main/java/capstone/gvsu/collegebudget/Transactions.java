@@ -56,7 +56,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     }
 
     public void deleteCategory(){
-        database.getUserIdRef().child("Category").child(categoryName).removeValue();
+        database.getUserIdRef().child("Budget").child("Category").child(categoryName).removeValue();
         Intent intent = new Intent(Transactions.this, HomePage.class);
         intent.putExtra("user", (Parcelable)user);
         startActivity(intent);
@@ -115,7 +115,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
 
             }
         };
-        DatabaseReference transRef = database.getUserIdRef().child("Category").child(categoryName);
+        DatabaseReference transRef = database.getUserIdRef().child("Budget").child("Category").child(categoryName);
         transRef.addListenerForSingleValueEvent(eventListener);
     }
 
@@ -134,7 +134,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String amountStr = inputOne.getText().toString();
-                database.getUserIdRef().child("Category").child(categoryName).child("Budgeted").setValue(amountStr);
+                database.getUserIdRef().child("Budget").child("Category").child(categoryName).child("Budgeted").setValue(amountStr);
                 budgeted.setText("$" + amountStr);
             }
         });
