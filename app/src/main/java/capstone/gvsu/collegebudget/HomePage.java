@@ -317,7 +317,7 @@ public class HomePage extends AppCompatActivity
             }
         };
 
-        DatabaseReference categoryRef = database.getUserIdRef().child("Category").child(categoryName).child("Transactions");
+        DatabaseReference categoryRef = database.getUserIdRef().child("Budget").child("Category").child(categoryName).child("Transactions");
         categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 
@@ -424,15 +424,28 @@ public class HomePage extends AppCompatActivity
         return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()));
     }
 
-    public void saveBudget(){
+    public void saveBudgetToHistory(){
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DatabaseReference toRef = database.getUserIdRef().child("History").child("20181107");
+                DatabaseReference toRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                        ValueEventListener eventListener = new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                setHistory(dataSnapshot);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        };
+                        databaseReference = databaseReference.child("Category");
+                        databaseReference.addListenerForSingleValueEvent(eventListener);
                     }
                 });
             }
@@ -444,5 +457,25 @@ public class HomePage extends AppCompatActivity
         };
         DatabaseReference categoryRef = database.getUserIdRef().child("Budget");
         categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void setHistory(DataSnapshot dataSnapshot){
+        double totalBudget = 0.0;
+        double totalSpent = 0.0;
+        for(DataSnapshot category : dataSnapshot.getChildren()){
+            double categorySpent = 0.0;
+            totalBudget += Double.parseDouble(category.child("Budgeted").getValue().toString());
+            for(DataSnapshot transDate : category.child("Transactions").getChildren()){
+                for(DataSnapshot trans : transDate.getChildren()){
+                    totalSpent += Double.parseDouble(trans.getValue().toString());
+                    categorySpent += Double.parseDouble(trans.getValue().toString());
+                }
+            }
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child("Category").child(category.getKey()).child("Spent");
+            spentRef.setValue(categorySpent);
+        }
+        DatabaseReference ref = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+        ref.child("TotalBudgeted").setValue(totalBudget);
+        ref.child("TotalSpent").setValue(totalSpent);
     }
 }
