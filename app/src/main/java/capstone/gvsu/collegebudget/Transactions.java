@@ -32,6 +32,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private TextView budgeted;
     private TextView spent;
     private Button budgetedButton;
+    private boolean locked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         Bundle extras = getIntent().getExtras();
         categoryName = extras.getString("categoryName");
         user = getIntent().getParcelableExtra("user");
+        locked = extras.getBoolean("locked");
         database = new Database(user.getId());
         showTransactions();
         TextView textView = findViewById(R.id.categoryName);
@@ -53,6 +55,12 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         spent = findViewById(R.id.spentAmountText);
         budgetedButton = findViewById(R.id.budgetedButton);
         budgetedButton.setOnClickListener(this);
+        setLockedButtons();
+    }
+
+    public void setLockedButtons(){
+        deleteButton.setEnabled(locked);
+        budgetedButton.setEnabled(locked);
     }
 
     public void deleteCategory(){
