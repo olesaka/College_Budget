@@ -20,7 +20,8 @@
             android:name=".HomePage"
             android:label="@string/title_activity_home_page"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Transactions"></activity>
+        <activity android:name=".Transactions" />
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>
