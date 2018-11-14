@@ -91,7 +91,6 @@ public class HomePage extends AppCompatActivity
         lockButton.setOnClickListener(this);
         locked = false;
         //exportBudgetHistory("November 2018");
-        saveBudgetToHistory();
     }
 
     @Override
@@ -445,8 +444,7 @@ public class HomePage extends AppCompatActivity
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())
-                DatabaseReference toRef = database.getUserIdRef().child("History").child("201904");
+                DatabaseReference toRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
                     @Override
@@ -489,10 +487,10 @@ public class HomePage extends AppCompatActivity
                     categorySpent += Double.parseDouble(trans.getValue().toString());
                 }
             }
-            DatabaseReference spentRef = database.getUserIdRef().child("History").child("201904").child("Spent");
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child("Spent");
             spentRef.setValue(categorySpent);
         }
-        DatabaseReference ref = database.getUserIdRef().child("History").child("201904");
+        DatabaseReference ref = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
         ref.child("TotalBudgeted").setValue(totalBudget);
         ref.child("TotalSpent").setValue(totalSpent);
     }
