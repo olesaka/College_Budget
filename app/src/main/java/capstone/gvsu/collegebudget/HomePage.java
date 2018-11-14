@@ -90,7 +90,7 @@ public class HomePage extends AppCompatActivity
         lockButton = findViewById(R.id.lockBudget);
         lockButton.setOnClickListener(this);
         locked = false;
-        exportBudgetHistory("November 2018");
+        //exportBudgetHistory("November 2018");
     }
 
     @Override
@@ -535,5 +535,6 @@ public class HomePage extends AppCompatActivity
             }
             categories.add(category);
         }
+        return categories;
     }
 }
