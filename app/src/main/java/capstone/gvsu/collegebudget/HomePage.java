@@ -35,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -89,6 +90,7 @@ public class HomePage extends AppCompatActivity
         lockButton = findViewById(R.id.lockBudget);
         lockButton.setOnClickListener(this);
         locked = false;
+        exportBudgetHistory("November 2018");
     }
 
     @Override
@@ -442,7 +444,10 @@ public class HomePage extends AppCompatActivity
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DatabaseReference toRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+                SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+                String month_name = month_date.format(Calendar.getInstance().getTime());
+                String date = month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+                DatabaseReference toRef = database.getUserIdRef().child("History").child(date);
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
                     @Override
@@ -476,6 +481,9 @@ public class HomePage extends AppCompatActivity
     public void setHistory(DataSnapshot dataSnapshot){
         double totalBudget = 0.0;
         double totalSpent = 0.0;
+        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
+        String month_name = month_date.format(Calendar.getInstance().getTime());
+        String date = month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
         for(DataSnapshot category : dataSnapshot.getChildren()){
             double categorySpent = 0.0;
             totalBudget += Double.parseDouble(category.child("Budgeted").getValue().toString());
@@ -485,11 +493,47 @@ public class HomePage extends AppCompatActivity
                     categorySpent += Double.parseDouble(trans.getValue().toString());
                 }
             }
-            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child("Category").child(category.getKey()).child("Spent");
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child(date).child("Category").child(category.getKey()).child("Spent");
             spentRef.setValue(categorySpent);
         }
-        DatabaseReference ref = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+        DatabaseReference ref = database.getUserIdRef().child("History").child(date);
         ref.child("TotalBudgeted").setValue(totalBudget);
         ref.child("TotalSpent").setValue(totalSpent);
+    }
+
+    public void exportBudgetHistory(String budgetDate){
+        ValueEventListener eventListener = new ValueEventListener(){
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String income = dataSnapshot.child("Income").toString();
+                String totalBudgeted = dataSnapshot.child("TotalBudgeted").toString();
+                String totalSpent = dataSnapshot.child("TotalSpent").toString();
+                ArrayList<Category> categories = getCategoryData(dataSnapshot);
+                /*
+                * Add whatever you need to using the data above
+                */
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        DatabaseReference categoryRef = database.getUserIdRef().child("History").child(budgetDate);
+        categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public ArrayList<Category> getCategoryData(DataSnapshot dataSnapshot){
+        ArrayList<Category> categories = new ArrayList<>();
+        for(DataSnapshot child : dataSnapshot.child("Category").getChildren()){
+            Category category = new Category(child.getKey(), child.child("Spent").getValue().toString(), child.child("Budgeted").getValue().toString());
+            for(DataSnapshot subChild : child.child("Transactions").getChildren()){
+                for(DataSnapshot transaction : subChild.getChildren()){
+                    category.addTransaction(transaction.getValue().toString());
+                }
+            }
+            categories.add(category);
+        }
     }
 }

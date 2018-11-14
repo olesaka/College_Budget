@@ -5,30 +5,36 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 public class Category {
-    private double spent;
-    private double budgeted;
+    private String spent;
+    private String budgeted;
     private double leftOver;
     private String name;
+    private ArrayList<String> transactions;
 
-    public Category(String name, double spent, double budgeted, Button editButton) {
+    public Category(String name, String spent, String budgeted) {
         this.spent = spent;
         this.budgeted = budgeted;
         this.name = name;
+        this.transactions = new ArrayList<>();
+    }
+
+    public void addTransaction(String transaction){
+        transactions.add(transaction);
     }
     public void setName(String name) {
         this.name = name;
     }
-    public void setSpent(double spent) {
+    public void setSpent(String spent) {
         this.spent = spent;
     }
-    public void setBudgeted(double budgeted) {
+    public void setBudgeted(String budgeted) {
         this.budgeted = budgeted;
     }
 
-    public double getSpent() {
+    public String getSpent() {
         return this.spent;
     }
-    public double getBudgeted() {
+    public String getBudgeted() {
         return budgeted;
     }
     public String getName() {
