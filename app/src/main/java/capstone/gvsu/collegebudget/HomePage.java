@@ -54,7 +54,6 @@ public class HomePage extends AppCompatActivity
     private Button incomeButton;
     private Button lockButton;
     private boolean locked;
-    private String budgetNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +92,6 @@ public class HomePage extends AppCompatActivity
         locked = false;
         //exportBudgetHistory("November 2018");
         saveBudgetToHistory();
-        budgetNumber = "";
     }
 
     @Override
@@ -352,7 +350,6 @@ public class HomePage extends AppCompatActivity
                 incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
                 locked = Boolean.parseBoolean(dataSnapshot.child("Locked").getValue().toString());
                 incomeButton.setEnabled(locked);
-                budgetNumber = dataSnapshot.child("Number").getValue().toString();
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
                 spentText.setText(getFormattedNumber(totalSpent));
@@ -448,11 +445,8 @@ public class HomePage extends AppCompatActivity
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
-                String month_name = month_date.format(Calendar.getInstance().getTime());
-                String date = budgetNumber + month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
-                date = budgetNumber + "April 2019";
-                DatabaseReference toRef = database.getUserIdRef().child("History").child(date);
+                //new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())
+                DatabaseReference toRef = database.getUserIdRef().child("History").child("201904");
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
                     @Override
@@ -461,10 +455,6 @@ public class HomePage extends AppCompatActivity
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 setHistory(dataSnapshot);
-                                database.incrementBudgetNumber(budgetNumber);
-                                int num = Integer.parseInt(budgetNumber);
-                                num++;
-                                budgetNumber = Integer.toString(num);
                             }
 
                             @Override
@@ -490,10 +480,6 @@ public class HomePage extends AppCompatActivity
     public void setHistory(DataSnapshot dataSnapshot){
         double totalBudget = 0.0;
         double totalSpent = 0.0;
-        SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
-        String month_name = month_date.format(Calendar.getInstance().getTime());
-        String date = budgetNumber + month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
-        date = budgetNumber + "April 2019";
         for(DataSnapshot category : dataSnapshot.getChildren()){
             double categorySpent = 0.0;
             totalBudget += Double.parseDouble(category.child("Budgeted").getValue().toString());
@@ -503,10 +489,10 @@ public class HomePage extends AppCompatActivity
                     categorySpent += Double.parseDouble(trans.getValue().toString());
                 }
             }
-            DatabaseReference spentRef = database.getUserIdRef().child("History").child(date).child("Category").child(category.getKey()).child("Spent");
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child("201904").child("Spent");
             spentRef.setValue(categorySpent);
         }
-        DatabaseReference ref = database.getUserIdRef().child("History").child(date);
+        DatabaseReference ref = database.getUserIdRef().child("History").child("201904");
         ref.child("TotalBudgeted").setValue(totalBudget);
         ref.child("TotalSpent").setValue(totalSpent);
     }
