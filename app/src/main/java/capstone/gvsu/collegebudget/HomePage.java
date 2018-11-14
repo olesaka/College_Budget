@@ -487,7 +487,7 @@ public class HomePage extends AppCompatActivity
                     categorySpent += Double.parseDouble(trans.getValue().toString());
                 }
             }
-            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child("Spent");
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child(category.getKey()).child("Spent");
             spentRef.setValue(categorySpent);
         }
         DatabaseReference ref = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
