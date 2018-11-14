@@ -69,14 +69,22 @@ public class Database {
         incomeRef.setValue(income);
     }
 
+    public void incrementBudgetNumber(String number){
+        int num = Integer.parseInt(number);
+        num++;
+        DatabaseReference ref = userIdRef.child("Budget").child("Number");
+        ref.setValue(Integer.toString(num));
+    }
+
     public void addDefaults(DatabaseReference userIdRef){
         addNewCategory("Groceries");
         addNewCategory("Gas");
         addNewCategory("Utilities");
         addNewCategory("Rent:Mortgage");
         setIncome(0.0);
-        DatabaseReference budgetRef = userIdRef.child("Budget").child("Locked");
-        budgetRef.setValue("false");
+        DatabaseReference budgetRef = userIdRef.child("Budget");
+        budgetRef.child("Locked").setValue("false");
+        budgetRef.child("Number").setValue("0");
         DatabaseReference historyRef = userIdRef.child("History");
         historyRef.setValue("");
     }

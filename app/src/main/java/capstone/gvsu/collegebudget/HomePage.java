@@ -54,6 +54,7 @@ public class HomePage extends AppCompatActivity
     private Button incomeButton;
     private Button lockButton;
     private boolean locked;
+    private String budgetNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,8 @@ public class HomePage extends AppCompatActivity
         lockButton.setOnClickListener(this);
         locked = false;
         //exportBudgetHistory("November 2018");
+        saveBudgetToHistory();
+        budgetNumber = "";
     }
 
     @Override
@@ -349,6 +352,7 @@ public class HomePage extends AppCompatActivity
                 incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
                 locked = Boolean.parseBoolean(dataSnapshot.child("Locked").getValue().toString());
                 incomeButton.setEnabled(locked);
+                budgetNumber = dataSnapshot.child("Number").getValue().toString();
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
                 spentText.setText(getFormattedNumber(totalSpent));
@@ -446,7 +450,8 @@ public class HomePage extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
                 String month_name = month_date.format(Calendar.getInstance().getTime());
-                String date = month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+                String date = budgetNumber + month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+                date = budgetNumber + "April 2019";
                 DatabaseReference toRef = database.getUserIdRef().child("History").child(date);
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
@@ -456,6 +461,10 @@ public class HomePage extends AppCompatActivity
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 setHistory(dataSnapshot);
+                                database.incrementBudgetNumber(budgetNumber);
+                                int num = Integer.parseInt(budgetNumber);
+                                num++;
+                                budgetNumber = Integer.toString(num);
                             }
 
                             @Override
@@ -483,7 +492,8 @@ public class HomePage extends AppCompatActivity
         double totalSpent = 0.0;
         SimpleDateFormat month_date = new SimpleDateFormat("MMMM");
         String month_name = month_date.format(Calendar.getInstance().getTime());
-        String date = month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+        String date = budgetNumber + month_name + " " + new SimpleDateFormat("yyyy").format(Calendar.getInstance().getTime());
+        date = budgetNumber + "April 2019";
         for(DataSnapshot category : dataSnapshot.getChildren()){
             double categorySpent = 0.0;
             totalBudget += Double.parseDouble(category.child("Budgeted").getValue().toString());
