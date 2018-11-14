@@ -75,6 +75,8 @@ public class Database {
         addNewCategory("Utilities");
         addNewCategory("Rent:Mortgage");
         setIncome(0.0);
+        DatabaseReference budgetRef = userIdRef.child("Budget").child("Locked");
+        budgetRef.setValue("false");
         DatabaseReference historyRef = userIdRef.child("History");
         historyRef.setValue("");
     }
