@@ -265,10 +265,14 @@ public class HomePage extends AppCompatActivity
                     String amountStr = amountBox.getText().toString();
                     String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
-                    database.addNewTransaction(categoryName, amount, descStr);
-                    updateSpentAndLeft(amount);
-                    lineView = getView();
-                    updateCategorySpent();
+                    if(amountIsMoreThanBudgeted(amount)){
+                        takeMoneyFromAnotherUnlockedCategory(amount);
+                    }else{
+                        database.addNewTransaction(categoryName, amount, descStr);
+                        updateSpentAndLeft(amount);
+                        lineView = getView();
+                        updateCategorySpent();
+                    }
                 }catch(NumberFormatException e){
                     // let the user know that it was a wrong number
                 }
@@ -281,6 +285,21 @@ public class HomePage extends AppCompatActivity
             }
         });
         builder.show();
+    }
+
+    public boolean amountIsMoreThanBudgeted(double amount){
+        for(Category category : categories){
+            if(categoryName == category.getName() && category.getLocked()==true){
+                if(amount > (category.getBudgeted()-category.getSpent())){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void takeMoneyFromAnotherUnlockedCategory(double amount){
+        // set pop up with options to take money from other locked categories here
     }
 
     public View getView(){
@@ -354,9 +373,12 @@ public class HomePage extends AppCompatActivity
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View rowView = inflater.inflate(R.layout.budget_line, null);
             linLayout.addView(rowView, linLayout.getChildCount() - 1);
-            setCategoryButton(rowView, child);
-            totalBudgeted += setBudgetedSection(rowView, child);
-            totalSpent += setSpentSection(rowView, child);
+            Category category = new Category();
+            setCategoryButton(rowView, child, category);
+            totalBudgeted += setBudgetedSection(rowView, child, category);
+            totalSpent += setSpentSection(rowView, child, category);
+            category.setLocked(Boolean.parseBoolean(child.child("Locked").getValue().toString()));
+            categories.add(category);
             setTransactionButton(rowView, child);
         }
         linLayout.addView(addCategory);
@@ -364,21 +386,23 @@ public class HomePage extends AppCompatActivity
         return totalSpent;
     }
 
-    public void setCategoryButton(View rowView, DataSnapshot child){
+    public void setCategoryButton(View rowView, DataSnapshot child, Category category){
         Button catButton = rowView.findViewById(R.id.categoryName);
         catButton.setOnClickListener(HomePage.this);
         catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
         catButton.setText(child.getKey());
+        category.setName(child.getKey());
     }
 
-    public double setBudgetedSection(View rowView, DataSnapshot child){
+    public double setBudgetedSection(View rowView, DataSnapshot child, Category category){
         TextView budgetText = rowView.findViewById(R.id.budgeted);
         double budget = Double.parseDouble(child.child("Budgeted").getValue().toString());
         budgetText.setText(getFormattedNumber(budget));
+        category.setBudgeted(budget);
         return budget;
     }
 
-    public double setSpentSection(View rowView, DataSnapshot child){
+    public double setSpentSection(View rowView, DataSnapshot child, Category category){
         TextView spentText = rowView.findViewById(R.id.spent);
         child = child.child("Transactions");
         double totalSpent = 0.0;
@@ -388,6 +412,7 @@ public class HomePage extends AppCompatActivity
             }
         }
         spentText.setText(getFormattedNumber(totalSpent));
+        category.setSpent(totalSpent);
         return totalSpent;
     }
 
@@ -502,7 +527,7 @@ public class HomePage extends AppCompatActivity
     public ArrayList<Category> getCategoryData(DataSnapshot dataSnapshot){
         ArrayList<Category> categories = new ArrayList<>();
         for(DataSnapshot child : dataSnapshot.child("Category").getChildren()){
-            Category category = new Category(child.getKey(), child.child("Spent").getValue().toString(), child.child("Budgeted").getValue().toString());
+            Category category = new Category(child.getKey(), Double.parseDouble(child.child("Spent").getValue().toString()), Double.parseDouble(child.child("Budgeted").getValue().toString()));
             for(DataSnapshot subChild : child.child("Transactions").getChildren()){
                 for(DataSnapshot transaction : subChild.getChildren()){
                     category.addTransaction(transaction.getValue().toString());
