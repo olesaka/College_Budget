@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class User implements Parcelable {
     private String id;
     private FirebaseAuth mAuth;
-    private GoogleSignInClient mGoogleSignInClient;
+    GoogleSignInClient mGoogleSignInClient;
     private DatabaseReference userIdRef;
     private boolean newUser;
 
