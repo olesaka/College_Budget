@@ -53,9 +53,10 @@ public class Database {
     }
 
     public void addNewCategory(String categoryName){
-        userIdRef.child("Budget").child("Category").child(categoryName).setValue("");
-        userIdRef.child("Budget").child("Category").child(categoryName).child("Transactions").setValue("");
-        userIdRef.child("Budget").child("Category").child(categoryName).child("Budgeted").setValue("0");
+        DatabaseReference categoryRef = userIdRef.child("Budget").child("Category").child(categoryName);
+        categoryRef.child("Transactions").setValue("");
+        categoryRef.child("Budgeted").setValue("0");
+        categoryRef.child("Locked").setValue("false");
     }
 
     public void addNewTransaction(String categoryName, Double amount, String description){
@@ -75,9 +76,11 @@ public class Database {
         addNewCategory("Utilities");
         addNewCategory("Rent:Mortgage");
         setIncome(0.0);
-        DatabaseReference budgetRef = userIdRef.child("Budget");
-        budgetRef.child("Locked").setValue("false");
         DatabaseReference historyRef = userIdRef.child("History");
         historyRef.setValue("");
+    }
+
+    public void setCategoryLock(String categoryName, boolean locked){
+        userIdRef.child("Budget").child("Category").child(categoryName).child("Locked").setValue(locked);
     }
 }

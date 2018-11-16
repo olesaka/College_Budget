@@ -52,8 +52,6 @@ public class HomePage extends AppCompatActivity
     private TextView leftAmount;
     private View lineView;
     private Button incomeButton;
-    private Button lockButton;
-    private boolean locked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,9 +85,6 @@ public class HomePage extends AppCompatActivity
         leftAmount = findViewById(R.id.leftAmount);
         incomeButton = findViewById(R.id.incomeButton);
         incomeButton.setOnClickListener(this);
-        lockButton = findViewById(R.id.lockBudget);
-        lockButton.setOnClickListener(this);
-        locked = false;
         //exportBudgetHistory("November 2018");
     }
 
@@ -159,10 +154,6 @@ public class HomePage extends AppCompatActivity
             setIncome();
             return;
         }
-        if(v.getId()==R.id.lockBudget){
-            lockBudget();
-            return;
-        }
         if(v.getId() == 0){
             addCategory();
             return;
@@ -174,13 +165,6 @@ public class HomePage extends AppCompatActivity
         }
         categoryName = btn.getTag().toString();
         addTransaction();
-    }
-
-    public void lockBudget(){
-        locked = locked ? false : true;
-        DatabaseReference lockRef = database.getUserIdRef().child("Budget").child("Locked");
-        lockRef.setValue(locked);
-        incomeButton.setEnabled(locked);
     }
 
     public void setIncome(){
@@ -347,8 +331,6 @@ public class HomePage extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
-                locked = Boolean.parseBoolean(dataSnapshot.child("Locked").getValue().toString());
-                incomeButton.setEnabled(locked);
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
                 spentText.setText(getFormattedNumber(totalSpent));
@@ -419,7 +401,6 @@ public class HomePage extends AppCompatActivity
         Intent intent = new Intent(HomePage.this, Transactions.class);
         intent.putExtra("categoryName", categoryName);
         intent.putExtra("user", user);
-        intent.putExtra("locked", locked);
         startActivity(intent);
     }
 

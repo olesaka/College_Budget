@@ -12,16 +12,19 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-public class Transactions extends AppCompatActivity implements View.OnClickListener{
+public class Transactions extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private String categoryName;
     private User user;
@@ -32,7 +35,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private TextView budgeted;
     private TextView spent;
     private Button budgetedButton;
-    private boolean locked;
+    private Switch lockSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,6 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         Bundle extras = getIntent().getExtras();
         categoryName = extras.getString("categoryName");
         user = getIntent().getParcelableExtra("user");
-        locked = extras.getBoolean("locked");
         database = new Database(user.getId());
         showTransactions();
         TextView textView = findViewById(R.id.categoryName);
@@ -55,12 +57,8 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         spent = findViewById(R.id.spentAmountText);
         budgetedButton = findViewById(R.id.budgetedButton);
         budgetedButton.setOnClickListener(this);
-        setLockedButtons();
-    }
-
-    public void setLockedButtons(){
-        deleteButton.setEnabled(locked);
-        budgetedButton.setEnabled(locked);
+        lockSwitch = findViewById(R.id.lockSwitch);
+        lockSwitch.setOnCheckedChangeListener(this);
     }
 
     public void deleteCategory(){
@@ -166,5 +164,19 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     public String getFormattedNumber(String str){
         double amount = Double.parseDouble(str);
         return getFormattedNumber(amount);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(buttonView.getId()==R.id.lockSwitch){
+            if(isChecked){
+                Toast.makeText(getApplicationContext(), "On", Toast.LENGTH_LONG).show();
+                lockSwitch.setText("locked");
+            }else{
+                Toast.makeText(getApplicationContext(), "Off", Toast.LENGTH_LONG).show();
+                lockSwitch.setText("unlocked");
+            }
+            database.setCategoryLock(categoryName, isChecked);
+        }
     }
 }
