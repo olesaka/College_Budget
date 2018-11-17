@@ -130,7 +130,7 @@ public class HomePage extends AppCompatActivity
     }
 
     private void signOut() {
-
+        user.mAuth.signOut();
         user.mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
@@ -311,8 +311,8 @@ public class HomePage extends AppCompatActivity
 
     public boolean amountIsMoreThanBudgeted(double amount){
         for(Category category : categories){
-            if(categoryName == category.getName() && category.getLocked()==true){
-                if(amount > (category.getBudgeted()-category.getSpent())){
+            if(categoryName == category.getName()) {
+                if (amount > (category.getBudgeted() - category.getSpent())) {
                     return true;
                 }
             }
@@ -321,7 +321,7 @@ public class HomePage extends AppCompatActivity
     }
 
     public void takeMoneyFromAnotherUnlockedCategory(double amount){
-        // set pop up with options to take money from other locked categories here
+        // set pop up with options to take money from unlocked categories here
     }
 
     public View getView(){
