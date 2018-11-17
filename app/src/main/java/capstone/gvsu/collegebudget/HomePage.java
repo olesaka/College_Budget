@@ -288,7 +288,14 @@ public class HomePage extends AppCompatActivity
                     String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
                     if(amountIsMoreThanBudgeted(amount)){
+                        // take money from other categories
                         takeMoneyFromAnotherUnlockedCategory(amount);
+
+                        // place transaction
+                        database.addNewTransaction(categoryName, amount, descStr);
+                        updateSpentAndLeft(amount);
+                        lineView = getView();
+                        updateCategorySpent();
                     }else{
                         database.addNewTransaction(categoryName, amount, descStr);
                         updateSpentAndLeft(amount);
@@ -320,8 +327,83 @@ public class HomePage extends AppCompatActivity
         return false;
     }
 
-    public void takeMoneyFromAnotherUnlockedCategory(double amount){
+    public void takeMoneyFromAnotherUnlockedCategory(final double amount){
+        // get proper overflow amount
+        double trueAmount = 0.0;
+        for(Category category : categories){
+            if (categoryName == category.getName()){
+                trueAmount = amount - (category.getBudgeted() - category.getSpent());
+            }
+        }
+        // make it final in order to pass to onClick later
+        final double trueAmt = trueAmount;
+
         // set pop up with options to take money from unlocked categories here
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // populate the spinner array that the spinner will use to display all options
+        final ArrayList<String> spinnerArray = new ArrayList<String>();
+        spinnerArray.add("All");
+        for(Category category : categories) {
+            if(category.getLocked() == false) {
+                spinnerArray.add(category.getName());
+            }
+        }
+
+        // create a spinner to hold available Categories
+        final Spinner spinner = new Spinner(this);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, spinnerArray);
+        spinner.setAdapter(spinnerArrayAdapter);
+        layout.addView(spinner);
+
+        // create the builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose an Overflow Category");
+        builder.setView(layout);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String option = spinner.getSelectedItem().toString();
+                // if user chooses all, divide overflow amount evenly among all unlocked categories
+                if (option.equals("All")) {
+                    // find amount to be taken from each category
+                    double amt = trueAmt / (spinnerArray.size() - 1);
+
+                    // add transaction to all unlocked categories
+                    for (Category category : categories) {
+                        if (category.getLocked() == false && category.getName() != categoryName) {
+                            database.addNewTransaction(category.getName(), amt, ("Overflow transaction from " + categoryName));
+                            updateSpentAndLeft(amt);
+                            lineView = getView();
+                            updateCategorySpent();
+                        }
+                    }
+                }
+                // if user chooses single Category, take only from specified category
+                else {
+                    for (Category category : categories) {
+                        if (category.getName().equals(option)) {
+                            database.addNewTransaction(category.getName(), trueAmt, ("Overflow transaction from " + categoryName));
+                            updateSpentAndLeft(trueAmt);
+                            lineView = getView();
+                            updateCategorySpent();
+                        }
+                    }
+                }
+                database.addNewTransaction(categoryName, (trueAmt * -1.00), "Overflow Prevention");
+                updateSpentAndLeft(trueAmt);
+                lineView = getView();
+                updateCategorySpent();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
     public View getView(){
