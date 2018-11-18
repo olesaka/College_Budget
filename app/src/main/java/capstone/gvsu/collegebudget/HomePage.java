@@ -289,13 +289,7 @@ public class HomePage extends AppCompatActivity
                     double amount = Double.parseDouble(amountStr);
                     if(amountIsMoreThanBudgeted(amount)){
                         // take money from other categories
-                        takeMoneyFromAnotherUnlockedCategory(amount);
-
-                        // place transaction
-                        database.addNewTransaction(categoryName, amount, descStr);
-                        updateSpentAndLeft(amount);
-                        lineView = getView();
-                        updateCategorySpent();
+                        takeMoneyFromAnotherUnlockedCategory(amount, descStr);
                     }else{
                         database.addNewTransaction(categoryName, amount, descStr);
                         updateSpentAndLeft(amount);
@@ -327,7 +321,7 @@ public class HomePage extends AppCompatActivity
         return false;
     }
 
-    public void takeMoneyFromAnotherUnlockedCategory(final double amount){
+    public void takeMoneyFromAnotherUnlockedCategory(double amount, final String descStr){
         // get proper overflow amount
         double trueAmount = 0.0;
         for(Category category : categories){
@@ -391,7 +385,14 @@ public class HomePage extends AppCompatActivity
                         }
                     }
                 }
+                // add negative value transaction to account for category "pulling" money from unlocked categories
                 database.addNewTransaction(categoryName, (trueAmt * -1.00), "Overflow Prevention");
+                updateSpentAndLeft(trueAmt);
+                lineView = getView();
+                updateCategorySpent();
+
+                // place transaction
+                database.addNewTransaction(categoryName, trueAmt, descStr);
                 updateSpentAndLeft(trueAmt);
                 lineView = getView();
                 updateCategorySpent();
