@@ -36,6 +36,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private TextView spent;
     private Button budgetedButton;
     private Switch lockSwitch;
+    private boolean isLocked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         Bundle extras = getIntent().getExtras();
         categoryName = extras.getString("categoryName");
         user = getIntent().getParcelableExtra("user");
+        isLocked = extras.getBoolean("isLocked");
         database = new Database(user.getId());
         showTransactions();
         TextView textView = findViewById(R.id.categoryName);
@@ -58,6 +60,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         budgetedButton = findViewById(R.id.budgetedButton);
         budgetedButton.setOnClickListener(this);
         lockSwitch = findViewById(R.id.lockSwitch);
+        lockSwitch.setChecked(isLocked);
         lockSwitch.setOnCheckedChangeListener(this);
     }
 

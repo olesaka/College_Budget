@@ -531,7 +531,17 @@ public class HomePage extends AppCompatActivity
         Intent intent = new Intent(HomePage.this, Transactions.class);
         intent.putExtra("categoryName", categoryName);
         intent.putExtra("user", user);
+        intent.putExtra("isLocked", getCategoryLocked(categoryName));
         startActivity(intent);
+    }
+
+    public boolean getCategoryLocked(String categoryName){
+        for(Category category : categories){
+            if(category.getName().equals(categoryName)){
+                return category.getLocked();
+            }
+        }
+        return false;
     }
 
     public String getFormattedNumber(double amount){
