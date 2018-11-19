@@ -266,12 +266,12 @@ public class HomePage extends AppCompatActivity
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        // Add a TextView here for the "Description" label
+        // Add a EditView here for the "Description" label
         final EditText descriptionBox = new EditText(this);
         descriptionBox.setHint("Description");
         layout.addView(descriptionBox);
 
-        // Add another TextView here for the "Amount" label
+        // Add another EditView here for the "Amount" label
         final EditText amountBox = new EditText(this);
         amountBox.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL); //for decimal numbers
         amountBox.setHint("$0.00");
@@ -288,8 +288,9 @@ public class HomePage extends AppCompatActivity
                     String descStr = descriptionBox.getText().toString();
                     double amount = Double.parseDouble(amountStr);
                     if(amountIsMoreThanBudgeted(amount)){
-                        // take money from other categories
-                        takeMoneyFromAnotherUnlockedCategory(amount, descStr);
+                        // Ask user if they want to pull funds from available categories
+                        warnUserOfBudgetOverflow(amount, descStr);
+
                     }else{
                         database.addNewTransaction(categoryName, amount, descStr);
                         updateSpentAndLeft(amount);
@@ -321,7 +322,40 @@ public class HomePage extends AppCompatActivity
         return false;
     }
 
-    public void takeMoneyFromAnotherUnlockedCategory(double amount, final String descStr){
+    public void warnUserOfBudgetOverflow(final double amount, final String descStr) {
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Add a TextView here for the "Warning" label
+        final TextView warningBox = new EditText(this);
+        warningBox.setText("Transaction will go over budget. Would you like to pull funds from an unlocked Category?");
+        warningBox.setFocusable(false);
+        warningBox.setClickable(false);
+        layout.addView(warningBox);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Warning");
+        builder.setView(layout);
+        builder.setPositiveButton("Pull Funds", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                takeMoneyFromAnotherUnlockedCategory(amount, descStr);
+            }
+        });
+        builder.setNegativeButton("Exceed Budgeted", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // place transaction
+                database.addNewTransaction(categoryName, amount, descStr);
+                updateSpentAndLeft(amount);
+                lineView = getView();
+                updateCategorySpent();
+            }
+        });
+        builder.show();
+    }
+
+    public void takeMoneyFromAnotherUnlockedCategory(final double amount, final String descStr){
         // get proper overflow amount
         double trueAmount = 0.0;
         for(Category category : categories){
@@ -340,8 +374,10 @@ public class HomePage extends AppCompatActivity
         final ArrayList<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("All");
         for(Category category : categories) {
-            if(category.getLocked() == false) {
-                spinnerArray.add(category.getName());
+            if(category.getLocked() == false
+                    && !category.getName().equals(categoryName)
+                    && trueAmt < (category.getBudgeted() - category.getSpent())) {
+                        spinnerArray.add(category.getName());
             }
         }
 
@@ -353,7 +389,7 @@ public class HomePage extends AppCompatActivity
 
         // create the builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose an Overflow Category");
+        builder.setTitle("Choose a Category to Pull From");
         builder.setView(layout);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -365,12 +401,16 @@ public class HomePage extends AppCompatActivity
                     double amt = trueAmt / (spinnerArray.size() - 1);
 
                     // add transaction to all unlocked categories
+                    // make sure the category can handle the transaction without going overbudget itself
                     for (Category category : categories) {
-                        if (category.getLocked() == false && category.getName() != categoryName) {
-                            database.addNewTransaction(category.getName(), amt, ("Overflow transaction from " + categoryName));
-                            updateSpentAndLeft(amt);
-                            lineView = getView();
-                            updateCategorySpent();
+                        if (category.getLocked() == false
+                                && category.getName() != categoryName
+                                && amt < (category.getBudgeted() - category.getSpent())) {
+
+                                    database.addNewTransaction(category.getName(), amt, ("Overflow transaction from " + categoryName));
+                                    updateSpentAndLeft(amt);
+                                    lineView = getView();
+                                    updateCategorySpent();
                         }
                     }
                 }
@@ -392,8 +432,8 @@ public class HomePage extends AppCompatActivity
                 updateCategorySpent();
 
                 // place transaction
-                database.addNewTransaction(categoryName, trueAmt, descStr);
-                updateSpentAndLeft(trueAmt);
+                database.addNewTransaction(categoryName, amount, descStr);
+                updateSpentAndLeft(amount);
                 lineView = getView();
                 updateCategorySpent();
             }
