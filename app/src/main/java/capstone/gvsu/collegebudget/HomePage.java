@@ -494,6 +494,9 @@ public class HomePage extends AppCompatActivity
             @SuppressLint("ResourceType")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                DataSnapshot historyRef = dataSnapshot.child("History");
+                checkToSaveBudget(historyRef);
+                dataSnapshot = dataSnapshot.child("Budget");
                 incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
                 dataSnapshot = dataSnapshot.child("Category");
                 double totalSpent = setCategoryInformation(dataSnapshot);
@@ -507,7 +510,7 @@ public class HomePage extends AppCompatActivity
 
             }
         };
-        DatabaseReference categoryRef = database.getUserIdRef().child("Budget");
+        DatabaseReference categoryRef = database.getUserIdRef();
         categoryRef.addListenerForSingleValueEvent(eventListener);
     }
 
@@ -601,11 +604,23 @@ public class HomePage extends AppCompatActivity
         return Double.parseDouble(dollarAmount.substring(1, dollarAmount.length()));
     }
 
+    public void checkToSaveBudget(DataSnapshot dataSnapshot){
+        Calendar time = Calendar.getInstance();
+        time.add(Calendar.MONTH, -1);
+        String strDate = new SimpleDateFormat("yyyyMM").format(time.getTime());
+        if(!dataSnapshot.hasChild(strDate)){
+            saveBudgetToHistory();
+        }
+    }
+
     public void saveBudgetToHistory(){
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DatabaseReference toRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+                Calendar time = Calendar.getInstance();
+                time.add(Calendar.MONTH, -1);
+                String strDate = new SimpleDateFormat("yyyyMM").format(time.getTime());
+                DatabaseReference toRef = database.getUserIdRef().child("History").child(strDate);
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
                     @Override
@@ -637,6 +652,9 @@ public class HomePage extends AppCompatActivity
     }
 
     public void setHistory(DataSnapshot dataSnapshot){
+        Calendar time = Calendar.getInstance();
+        time.add(Calendar.MONTH, -1);
+        String strDate = new SimpleDateFormat("yyyyMM").format(time.getTime());
         double totalBudget = 0.0;
         double totalSpent = 0.0;
         for(DataSnapshot category : dataSnapshot.getChildren()){
@@ -644,14 +662,15 @@ public class HomePage extends AppCompatActivity
             totalBudget += Double.parseDouble(category.child("Budgeted").getValue().toString());
             for(DataSnapshot transDate : category.child("Transactions").getChildren()){
                 for(DataSnapshot trans : transDate.getChildren()){
-                    totalSpent += Double.parseDouble(trans.getValue().toString());
-                    categorySpent += Double.parseDouble(trans.getValue().toString());
+                    double temp = Double.parseDouble(trans.getValue().toString());
+                    totalSpent += temp;
+                    categorySpent += temp;
                 }
             }
-            DatabaseReference spentRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime())).child("Category").child(category.getKey()).child("Spent");
+            DatabaseReference spentRef = database.getUserIdRef().child("History").child(strDate).child("Category").child(category.getKey()).child("Spent");
             spentRef.setValue(categorySpent);
         }
-        DatabaseReference ref = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+        DatabaseReference ref = database.getUserIdRef().child("History").child(strDate);
         ref.child("TotalBudgeted").setValue(totalBudget);
         ref.child("TotalSpent").setValue(totalSpent);
     }

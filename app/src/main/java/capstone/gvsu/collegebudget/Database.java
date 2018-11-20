@@ -60,7 +60,7 @@ public class Database {
     }
 
     public void addNewTransaction(String categoryName, Double amount, String description){
-        String timeStamp = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+        String timeStamp = new SimpleDateFormat("yyyyMMddmmss").format(Calendar.getInstance().getTime());
         DatabaseReference transRef = userIdRef.child("Budget").child("Category").child(categoryName).child("Transactions").child(timeStamp).child(description);
         transRef.setValue(amount);
     }
