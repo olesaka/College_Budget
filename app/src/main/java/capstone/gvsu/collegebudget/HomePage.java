@@ -418,24 +418,29 @@ public class HomePage extends AppCompatActivity
                 else {
                     for (Category category : categories) {
                         if (category.getName().equals(option)) {
-                            database.addNewTransaction(category.getName(), trueAmt, ("Overflow transaction from " + categoryName));
-                            updateSpentAndLeft(trueAmt);
+                            database.setCategoryBudget(category.getName(), category.getBudgeted()-trueAmt);
+                            Category toCategory = getCategoryByName(categoryName);
+                            database.setCategoryBudget(categoryName, (toCategory.getBudgeted()+trueAmt));
+                            database.addNewTransaction(categoryName, amount, descStr);
+                            updateSpentAndLeft(amount);
                             lineView = getView();
                             updateCategorySpent();
+                            lineView = getView();
+                            //updateCategorySpent();
                         }
                     }
                 }
                 // add negative value transaction to account for category "pulling" money from unlocked categories
-                database.addNewTransaction(categoryName, (trueAmt * -1.00), "Overflow Prevention");
-                updateSpentAndLeft(trueAmt);
-                lineView = getView();
-                updateCategorySpent();
+                //database.addNewTransaction(categoryName, (trueAmt * -1.00), "Overflow Prevention");
+                //updateSpentAndLeft(trueAmt);
+                //lineView = getView();
+                //updateCategorySpent();
 
                 // place transaction
-                database.addNewTransaction(categoryName, amount, descStr);
-                updateSpentAndLeft(amount);
-                lineView = getView();
-                updateCategorySpent();
+                //database.addNewTransaction(categoryName, amount, descStr);
+                //updateSpentAndLeft(amount);
+                //lineView = getView();
+                //updateCategorySpent();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -454,6 +459,14 @@ public class HomePage extends AppCompatActivity
             if(text.equals(categoryName)){
                 return linLayout.getChildAt(i);
             }
+        }
+        return null;
+    }
+
+    public Category getCategoryByName(String categoryName){
+        for(Category category: categories){
+            if(category.getName().equals(categoryName));
+            return category;
         }
         return null;
     }
@@ -608,7 +621,10 @@ public class HomePage extends AppCompatActivity
         Calendar time = Calendar.getInstance();
         time.add(Calendar.MONTH, -1);
         String strDate = new SimpleDateFormat("yyyyMM").format(time.getTime());
-        if(!dataSnapshot.hasChild(strDate)){
+        if(!dataSnapshot.hasChildren()){
+            DatabaseReference firstHistoryRef = database.getUserIdRef().child("History").child(new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime()));
+            firstHistoryRef.setValue("");
+        }else if(dataSnapshot.getChildrenCount() !=1 && !dataSnapshot.hasChild(strDate)){
             saveBudgetToHistory();
         }
     }
