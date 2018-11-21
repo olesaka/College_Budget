@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -523,8 +524,15 @@ public class HomePage extends AppCompatActivity
             linLayout.addView(rowView, linLayout.getChildCount() - 1);
             Category category = new Category();
             setCategoryButton(rowView, child, category);
-            totalBudgeted += setBudgetedSection(rowView, child, category);
-            totalSpent += setSpentSection(rowView, child, category);
+            double budgetedAmnt = setBudgetedSection(rowView, child, category);
+            totalBudgeted += budgetedAmnt;
+            double spentAmnt = setSpentSection(rowView, child, category);
+            totalSpent += spentAmnt;
+            if (budgetedAmnt >= spentAmnt) {
+                rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
+            } else {
+                rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
+            }
             category.setLocked(Boolean.parseBoolean(child.child("Locked").getValue().toString()));
             categories.add(category);
             setTransactionButton(rowView, child);
