@@ -83,4 +83,8 @@ public class Database {
     public void setCategoryLock(String categoryName, boolean locked){
         userIdRef.child("Budget").child("Category").child(categoryName).child("Locked").setValue(locked);
     }
+
+    public void setCategoryBudget(String category, double amount){
+        userIdRef.child("Budget").child("Category").child(category).child("Budgeted").setValue(Double.toString(amount));
+    }
 }
