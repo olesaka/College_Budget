@@ -466,8 +466,9 @@ public class HomePage extends AppCompatActivity
 
     public Category getCategoryByName(String categoryName){
         for(Category category: categories){
-            if(category.getName().equals(categoryName));
-            return category;
+            if(category.getName().equals(categoryName)) {
+                return category;
+            }
         }
         return null;
     }
