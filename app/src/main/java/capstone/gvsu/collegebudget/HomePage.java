@@ -44,6 +44,8 @@ import java.util.GregorianCalendar;
 public class HomePage extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
+    private static final int UPDATE_CODE = 3;
+
     private User user;
     private Database database;
     private String categoryName;
@@ -183,6 +185,21 @@ public class HomePage extends AppCompatActivity
         }
         categoryName = btn.getTag().toString();
         addTransaction();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == UPDATE_CODE){
+            if (resultCode == RESULT_OK){
+                Boolean update = data.getExtras().getBoolean("update");
+                if(update){
+
+                //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
+
+                }
+            }
+        }
     }
 
     public void setIncome(){
@@ -614,7 +631,7 @@ public class HomePage extends AppCompatActivity
         intent.putExtra("categoryName", categoryName);
         intent.putExtra("user", user);
         intent.putExtra("isLocked", getCategoryLocked(categoryName));
-        startActivity(intent);
+        startActivityForResult(intent, UPDATE_CODE);
     }
 
     public boolean getCategoryLocked(String categoryName){

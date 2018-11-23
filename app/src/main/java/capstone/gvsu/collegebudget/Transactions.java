@@ -30,7 +30,6 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
     private User user;
     private Database database;
     private Button deleteButton;
-    private Button backButton;
     private LinearLayout linLayout;
     private TextView budgeted;
     private TextView spent;
@@ -52,8 +51,6 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         textView.setText(categoryName);
         deleteButton = findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(this);
-        backButton = findViewById(R.id.back);
-        backButton.setOnClickListener(this);
         linLayout = findViewById(R.id.transLayout);
         budgeted = findViewById(R.id.budgetedAmountText);
         spent = findViewById(R.id.spentAmountText);
@@ -71,12 +68,6 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-    public void back(){
-        Intent intent = new Intent(Transactions.this, HomePage.class);
-        intent.putExtra("user", (Parcelable)user);
-        startActivity(intent);
-    }
-
     @Override
     public void onClick(View v) {
         if(v.getId()==R.id.deleteButton){
@@ -87,10 +78,15 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
             setCategoryBudget();
             return;
         }
-        if(v.getId()==R.id.back){
-            back();
-            return;
-        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("update", true);
+        setResult(RESULT_OK, intent);
+
+        finish();
     }
 
     public void showTransactions(){
