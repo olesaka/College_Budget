@@ -106,7 +106,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
                     for(DataSnapshot subChild : child.getChildren()){
                         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         final View rowView = inflater.inflate(R.layout.transaction_line, null);
-                        linLayout.addView(rowView, linLayout.getChildCount() - 1);
+                        linLayout.addView(rowView, linLayout.getChildCount());
                         TextView descriptionText = rowView.findViewById(R.id.description);
                         descriptionText.setText(subChild.getKey());
                         TextView dateText = rowView.findViewById(R.id.date);
