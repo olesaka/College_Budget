@@ -53,4 +53,7 @@ public class Category {
     public boolean getLocked(){
         return locked;
     }
+    public void addToSpent(double amount){
+        spent += amount;
+    }
 }

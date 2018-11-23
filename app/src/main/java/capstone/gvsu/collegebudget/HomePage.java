@@ -131,14 +131,9 @@ public class HomePage extends AppCompatActivity
     }
 
     private void signOut() {
-        user.mAuth.signOut();
-        user.mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
-                    }
-                });
+        Intent intent = new Intent();
+        intent.putExtra("signOut", true);
+        setResult(RESULT_OK, intent);
 
         finish();
     }
@@ -287,6 +282,7 @@ public class HomePage extends AppCompatActivity
                 try{
                     String amountStr = amountBox.getText().toString();
                     String descStr = descriptionBox.getText().toString();
+                    if(descStr.equals("")) descStr="No Message";
                     double amount = Double.parseDouble(amountStr);
                     if(amountIsMoreThanBudgeted(amount)){
                         // Ask user if they want to pull funds from available categories
@@ -297,6 +293,8 @@ public class HomePage extends AppCompatActivity
                         updateSpentAndLeft(amount);
                         lineView = getView();
                         updateCategorySpent();
+                        Category category = getCategoryByName(categoryName);
+                        category.addToSpent(amount);
                     }
                 }catch(NumberFormatException e){
                     // let the user know that it was a wrong number
@@ -426,8 +424,11 @@ public class HomePage extends AppCompatActivity
                             updateSpentAndLeft(amount);
                             lineView = getView();
                             updateCategorySpent();
-                            lineView = getView();
-                            //updateCategorySpent();
+                            updateCategoryBudget(lineView,toCategory.getBudgeted()+trueAmt);
+                            Category cat = getCategoryByName(categoryName);
+                            cat.addToSpent(trueAmt);
+                            View budgetLine = getView(option);
+                            updateCategoryBudget(budgetLine, category.getBudgeted()-trueAmt);
                         }
                     }
                 }
@@ -464,10 +465,22 @@ public class HomePage extends AppCompatActivity
         return null;
     }
 
+    public View getView(String categoryName){
+        for(int i=0; i<linLayout.getChildCount(); i++){
+            Button btn = linLayout.getChildAt(i).findViewById(R.id.categoryName);
+            String text = btn.getText().toString();
+            if(text.equals(categoryName)){
+                return linLayout.getChildAt(i);
+            }
+        }
+        return null;
+    }
+
     public Category getCategoryByName(String categoryName){
         for(Category category: categories){
-            if(category.getName().equals(categoryName));
-            return category;
+            if(category.getName().equals(categoryName)) {
+                return category;
+            }
         }
         return null;
     }
@@ -494,6 +507,11 @@ public class HomePage extends AppCompatActivity
 
         DatabaseReference categoryRef = database.getUserIdRef().child("Budget").child("Category").child(categoryName).child("Transactions");
         categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void updateCategoryBudget(View budgetLine, double amount){
+        TextView textView = budgetLine.findViewById(R.id.budgeted);
+        textView.setText(getFormattedNumber(amount));
     }
 
     public void updateSpentAndLeft(double amount){
