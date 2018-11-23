@@ -131,14 +131,9 @@ public class HomePage extends AppCompatActivity
     }
 
     private void signOut() {
-        user.mAuth.signOut();
-        user.mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
-                    }
-                });
+        Intent intent = new Intent();
+        intent.putExtra("signOut", true);
+        setResult(RESULT_OK, intent);
 
         finish();
     }

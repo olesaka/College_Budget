@@ -35,9 +35,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
+    private static final int SIGN_OUT_CODE = 1;
+    private final static int RC_SIGN_IN = 2;
+
     SignInButton signInButton;
     private FirebaseAuth mAuth;
-    private final static int RC_SIGN_IN = 2;
     private static final String TAG = "SignInActivity";
     private GoogleSignInClient mGoogleSignInClient;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -79,6 +81,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 // ...
+            }
+        }
+
+        if (requestCode == SIGN_OUT_CODE){
+            if (resultCode == RESULT_OK){
+
+                Boolean signOut = data.getExtras().getBoolean("signOut");
+
+                if(signOut){
+
+                    mAuth.signOut();
+                    mGoogleSignInClient.signOut();
+
+                }
             }
         }
     }
@@ -129,12 +145,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     User user = new User(id, mAuth, mGoogleSignInClient, userIdRef, true);
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtra("user", (Parcelable)user);
-                    startActivity(intent);
+                    startActivityForResult(intent, SIGN_OUT_CODE);
                 }
                 User user = new User(id, mAuth, mGoogleSignInClient, userIdRef, false);
                 Intent intent = new Intent(MainActivity.this, HomePage.class);
                 intent.putExtra("user", (Parcelable)user);
-                startActivity(intent);
+                startActivityForResult(intent, SIGN_OUT_CODE);
             }
 
             @Override
@@ -143,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userIdRef.addListenerForSingleValueEvent(eventListener);
         return userIdRef;
     }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
