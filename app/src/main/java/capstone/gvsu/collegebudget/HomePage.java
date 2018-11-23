@@ -541,9 +541,9 @@ public class HomePage extends AppCompatActivity
             totalBudgeted += budgetedAmnt;
             double spentAmnt = setSpentSection(rowView, child, category);
             totalSpent += spentAmnt;
-            if (budgetedAmnt >= spentAmnt) {
+            if (budgetedAmnt > spentAmnt) {
                 rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
-            } else {
+            } else if (budgetedAmnt < spentAmnt){
                 rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
             }
             category.setLocked(Boolean.parseBoolean(child.child("Locked").getValue().toString()));
