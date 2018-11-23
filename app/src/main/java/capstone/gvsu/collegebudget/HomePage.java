@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -121,6 +122,7 @@ public class HomePage extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
+            intent.putExtra("user", (Parcelable)user);
             startActivity(intent);
             return true;
         }
@@ -195,7 +197,7 @@ public class HomePage extends AppCompatActivity
                 Boolean update = data.getExtras().getBoolean("update");
                 if(update){
 
-                //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
+                    //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
 
                 }
             }
@@ -734,40 +736,4 @@ public class HomePage extends AppCompatActivity
         ref.child("TotalSpent").setValue(totalSpent);
     }
 
-    public void exportBudgetHistory(String budgetDate){
-        ValueEventListener eventListener = new ValueEventListener(){
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String income = dataSnapshot.child("Income").toString();
-                String totalBudgeted = dataSnapshot.child("TotalBudgeted").toString();
-                String totalSpent = dataSnapshot.child("TotalSpent").toString();
-                ArrayList<Category> categories = getCategoryData(dataSnapshot);
-                /*
-                * Add whatever you need to using the data above
-                */
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-        DatabaseReference categoryRef = database.getUserIdRef().child("History").child(budgetDate);
-        categoryRef.addListenerForSingleValueEvent(eventListener);
-    }
-
-    public ArrayList<Category> getCategoryData(DataSnapshot dataSnapshot){
-        ArrayList<Category> categories = new ArrayList<>();
-        for(DataSnapshot child : dataSnapshot.child("Category").getChildren()){
-            Category category = new Category(child.getKey(), Double.parseDouble(child.child("Spent").getValue().toString()), Double.parseDouble(child.child("Budgeted").getValue().toString()));
-            for(DataSnapshot subChild : child.child("Transactions").getChildren()){
-                for(DataSnapshot transaction : subChild.getChildren()){
-                    category.addTransaction(transaction.getValue().toString());
-                }
-            }
-            categories.add(category);
-        }
-        return categories;
-    }
 }

@@ -11,8 +11,8 @@ import java.io.Serializable;
 
 public class User implements Parcelable {
     private String id;
-    FirebaseAuth mAuth;
-    GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
     private DatabaseReference userIdRef;
     private boolean newUser;
 
