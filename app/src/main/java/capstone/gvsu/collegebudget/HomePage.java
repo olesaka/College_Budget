@@ -97,9 +97,11 @@ public class HomePage extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        refreshHomePage();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            refreshHomePage();
         } else {
             super.onBackPressed();
         }
@@ -196,12 +198,68 @@ public class HomePage extends AppCompatActivity
             if (resultCode == RESULT_OK){
                 Boolean update = data.getExtras().getBoolean("update");
                 if(update){
-
+                    updateHomePage();
                     //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
 
                 }
             }
         }
+    }
+
+    public void updateHomePage(){
+        ValueEventListener eventListener = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                incomeText.setText("$" + dataSnapshot.child("Income").getValue().toString());
+                dataSnapshot = dataSnapshot.child("Category");
+                double totalSpent = refreshCategoryInformation(dataSnapshot);
+                spentText.setText(getFormattedNumber(totalSpent));
+                double budgeted = getDoubleFromDollar(budgetedText.getText().toString());
+                leftAmount.setText(getFormattedNumber(budgeted - totalSpent));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+        DatabaseReference categoryRef = database.getUserIdRef().child("Budget");
+        categoryRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public double refreshCategoryInformation(DataSnapshot dataSnapshot){
+        double totalSpent = 0.0;
+        double totalBudgeted = 0.0;
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+            View rowView = getLinearView(child.getKey());
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            Category category = new Category();
+            double budgetedAmnt = setBudgetedSection(rowView, child, category);
+            totalBudgeted += budgetedAmnt;
+            double spentAmnt = setSpentSection(rowView, child, category);
+            totalSpent += spentAmnt;
+            if (budgetedAmnt > spentAmnt) {
+                rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
+            } else if (budgetedAmnt < spentAmnt){
+                rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
+            }
+            setTransactionButton(rowView, child);
+        }
+        budgetedText.setText(getFormattedNumber(totalBudgeted));
+        return totalSpent;
+    }
+
+    public View getLinearView(String name){
+        int count = linLayout.getChildCount()-1;
+        for(int i=0; i<count; i++) {
+            Button v = linLayout.getChildAt(i).findViewById(R.id.categoryName);
+            String catName = v.getText().toString();
+            if(catName.equals(name)){
+                return linLayout.getChildAt(i);
+            }
+        }
+        return null;
     }
 
     public void setIncome(){
