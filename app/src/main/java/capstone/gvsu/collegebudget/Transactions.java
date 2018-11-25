@@ -103,7 +103,7 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                budgeted.setText("$" + dataSnapshot.child("Budgeted").getValue().toString());
+                budgeted.setText(getFormattedBudget(dataSnapshot.child("Budgeted").getValue().toString()));
                 dataSnapshot = dataSnapshot.child("Transactions");
                 Double totalSpent = 0.0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -186,5 +186,15 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
             }
             database.setCategoryLock(categoryName, isChecked);
         }
+    }
+
+    public String getFormattedBudget(String strDouble){
+        strDouble = "$"+strDouble;
+        if(strDouble.substring(strDouble.length()-2).equals("00")){
+            return strDouble.substring(0, strDouble.length()-3);
+        }else if(strDouble.substring(strDouble.length()-2).equals(".0")){
+            return strDouble.substring(0, strDouble.length()-2);
+        }
+        return strDouble;
     }
 }
