@@ -45,39 +45,31 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void chooseBudgetMonth() {
-        // set pop up with options to take money from unlocked categories here
+        // layout for export dialogue
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        // populate the spinner array that the spinner will use to display all options
-        final ArrayList<String> spinnerArrayRaw = getMonthsFromHistory();
+        // populate the spinner array
+        final ArrayList<String> spinnerArrayRaw = getMonthsFromHistory();           // <----------- This line successfully(?) executes as far as I can tell
         final ArrayList<String> spinnerArrayBeau = new ArrayList<String>();
-        spinnerArrayBeau.add("full");
 
-        for(int x = 0; x < spinnerArrayRaw.size(); x++){
-            spinnerArrayBeau.add(beautifyMonth("201812"));
+        for(int x = 0; x < spinnerArrayRaw.size(); x++){                            // <----------- however, spinnerArrayRaw.size() returns 0
+            spinnerArrayBeau.add(beautifyMonth(spinnerArrayRaw.get(x)));            // <----------- which means this line never executes
         }
 
-        if(spinnerArrayRaw.isEmpty()){
+        if(spinnerArrayRaw.isEmpty()){                                              // <----------- and this line is always registering as true, which means spinnerArrayBeau contains only the string "empty"
             spinnerArrayBeau.add("empty");
-        }
-
-        // create a spinner to hold available Categories
-        final Spinner spinner = new Spinner(this);
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, spinnerArrayBeau);
-        spinner.setAdapter(spinnerArrayAdapter);
-        layout.addView(spinner);
-
-        // Add a TextView here for the "Warning" label
-        final TextView warningBox = new EditText(this);
-        warningBox.setText("");
-        warningBox.setFocusable(false);
-        warningBox.setClickable(false);
-        layout.addView(warningBox);
-
-        // create the builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Month to Export");
+        }                                                                           // at this point you're thinking, "so obviously getMonthsFromHistory() didn't work
+                                                                                    // on line 53." But that's the weird part in all this.
+        // create a spinner to hold available months
+        final Spinner spinner = new Spinner(this);                                                                                  // if you change spinnerArrayBeau
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, spinnerArrayBeau); // <----- right here
+        spinner.setAdapter(spinnerArrayAdapter);                                                                                                            // to be spinnerArrayRaw, the raw month strings
+        layout.addView(spinner);                                                                                                                            // from the database will populate the spinner in the app, as if spinnerArrayRaw had data in it
+                                                                                                                                            // but you cannot use spinnerArrayRaw in any other way, because it behaves as if it is empty
+        // create the builder                                                                                                                  including the above .size(), and .isEmpty(), you also cannot use .get() or the app will crash with an
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);                                                                 // OutOfBoundsException because the list registers as empty. I cannot figure out how to get access to this raw data
+        builder.setTitle("Select Month to Export");                                                                                         // and I need it in order to pull the proper monthly budget from the database once the user has chosen a month.
         builder.setView(layout);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
