@@ -57,8 +57,17 @@ public class Transactions extends AppCompatActivity implements View.OnClickListe
         budgetedButton = findViewById(R.id.budgetedButton);
         budgetedButton.setOnClickListener(this);
         lockSwitch = findViewById(R.id.lockSwitch);
-        lockSwitch.setChecked(isLocked);
+        setLockSwitch();
         lockSwitch.setOnCheckedChangeListener(this);
+    }
+
+    public void setLockSwitch(){
+        lockSwitch.setChecked(isLocked);
+        if(isLocked){
+            lockSwitch.setText("locked");
+        }else{
+            lockSwitch.setText("unlocked");
+        }
     }
 
     public void deleteCategory(){
