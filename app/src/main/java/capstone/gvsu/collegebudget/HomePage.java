@@ -234,7 +234,7 @@ public class HomePage extends AppCompatActivity
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             View rowView = getLinearView(child.getKey());
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            Category category = new Category();
+            Category category = getCategoryByName(child.getKey());
             double budgetedAmnt = setBudgetedSection(rowView, child, category);
             totalBudgeted += budgetedAmnt;
             double spentAmnt = setSpentSection(rowView, child, category);
@@ -244,6 +244,7 @@ public class HomePage extends AppCompatActivity
             } else if (budgetedAmnt < spentAmnt){
                 rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
             }
+            category.setLocked(Boolean.parseBoolean(child.child("Locked").getValue().toString()));
             setTransactionButton(rowView, child);
         }
         budgetedText.setText(getFormattedNumber(totalBudgeted));
