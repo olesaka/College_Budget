@@ -97,7 +97,8 @@ public class HomePage extends AppCompatActivity
         month = findViewById(R.id.budgetMonth);
         DateFormatSymbols dfs = new DateFormatSymbols();
         String[] months = dfs.getMonths();
-        month.setText(months[Calendar.MONTH]);
+        Calendar calendar = Calendar.getInstance();
+        month.setText(months[calendar.get(Calendar.MONTH)]);
         //exportBudgetHistory("November 2018");
     }
 
