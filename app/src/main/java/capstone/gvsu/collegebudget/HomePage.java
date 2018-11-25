@@ -104,11 +104,9 @@ public class HomePage extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        refreshHomePage();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-            refreshHomePage();
         } else {
             super.onBackPressed();
         }
@@ -246,7 +244,7 @@ public class HomePage extends AppCompatActivity
             totalBudgeted += budgetedAmnt;
             double spentAmnt = setSpentSection(rowView, child, category);
             totalSpent += spentAmnt;
-            if (budgetedAmnt > spentAmnt) {
+            if (budgetedAmnt >= spentAmnt) {
                 rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
             } else if (budgetedAmnt < spentAmnt){
                 rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
@@ -397,7 +395,7 @@ public class HomePage extends AppCompatActivity
 
     public boolean amountIsMoreThanBudgeted(double amount){
         for(Category category : categories){
-            if(categoryName == category.getName()) {
+            if(categoryName.equals(category.getName())) {
                 if (amount > (category.getBudgeted() - category.getSpent())) {
                     return true;
                 }
@@ -434,6 +432,10 @@ public class HomePage extends AppCompatActivity
                 updateSpentAndLeft(amount);
                 lineView = getView();
                 updateCategorySpent();
+                View rowView = getLinearView(categoryName);
+                rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
+                Category category = getCategoryByName(categoryName);
+                category.addToSpent(amount);
             }
         });
         builder.show();
@@ -644,7 +646,7 @@ public class HomePage extends AppCompatActivity
             totalBudgeted += budgetedAmnt;
             double spentAmnt = setSpentSection(rowView, child, category);
             totalSpent += spentAmnt;
-            if (budgetedAmnt > spentAmnt) {
+            if (budgetedAmnt >= spentAmnt) {
                 rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
             } else if (budgetedAmnt < spentAmnt){
                 rowView.setBackgroundColor(Color.argb(40, 255, 0, 0));
