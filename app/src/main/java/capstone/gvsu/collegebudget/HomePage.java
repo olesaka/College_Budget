@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,6 +58,7 @@ public class HomePage extends AppCompatActivity
     private TextView budgetedText;
     private TextView spentText;
     private TextView leftAmount;
+    private TextView month;
     private View lineView;
     private Button incomeButton;
 
@@ -92,6 +94,10 @@ public class HomePage extends AppCompatActivity
         leftAmount = findViewById(R.id.leftAmount);
         incomeButton = findViewById(R.id.incomeButton);
         incomeButton.setOnClickListener(this);
+        month = findViewById(R.id.budgetMonth);
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        month.setText(months[Calendar.MONTH]);
         //exportBudgetHistory("November 2018");
     }
 
@@ -739,6 +745,7 @@ public class HomePage extends AppCompatActivity
                 Calendar time = Calendar.getInstance();
                 time.add(Calendar.MONTH, -1);
                 String strDate = new SimpleDateFormat("yyyyMM").format(time.getTime());
+                //strdate = 201811
                 DatabaseReference toRef = database.getUserIdRef().child("History").child(strDate);
                 toRef.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener(){
 
