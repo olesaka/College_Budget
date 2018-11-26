@@ -99,7 +99,6 @@ public class HomePage extends AppCompatActivity
         String[] months = dfs.getMonths();
         Calendar calendar = Calendar.getInstance();
         month.setText(months[calendar.get(Calendar.MONTH)]);
-        //exportBudgetHistory("November 2018");
     }
 
     @Override
