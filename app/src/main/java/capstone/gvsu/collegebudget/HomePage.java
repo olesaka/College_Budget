@@ -202,7 +202,7 @@ public class HomePage extends AppCompatActivity
             if (resultCode == RESULT_OK){
                 Boolean update = data.getExtras().getBoolean("update");
                 if(update){
-                    updateHomePage();
+                   updateHomePage();
                     //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
 
                 }
@@ -239,7 +239,6 @@ public class HomePage extends AppCompatActivity
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             int num = linLayout.getChildCount();
             View rowView = getLinearView(child.getKey());
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             Category category = getCategoryByName(child.getKey());
             double budgetedAmnt = setBudgetedSection(rowView, child, category);
             totalBudgeted += budgetedAmnt;
@@ -258,9 +257,10 @@ public class HomePage extends AppCompatActivity
     }
 
     public View getLinearView(String name){
-        int count = linLayout.getChildCount();s
+        int count = linLayout.getChildCount();
         for(int i=0; i<count; i++) {
-            Button v = linLayout.getChildAt(i).findViewById(R.id.categoryName);
+            View view = linLayout.getChildAt(i);
+            Button v = view.findViewById(R.id.categoryName);
             if(v!=null) {
                 String catName = v.getText().toString();
                 if (catName.equals(name)) {
@@ -316,12 +316,12 @@ public class HomePage extends AppCompatActivity
                 categoryName = inputOne.getText().toString();
                 database.addNewCategory(categoryName);
                 LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                final View rowView = inflater.inflate(R.layout.budget_line, null);
+                View rowView = inflater.inflate(R.layout.budget_line, null);
                 int num = linLayout.getChildCount();
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
                 num = linLayout.getChildCount();
                 linLayout.addView(rowView);
-                num = linLayout.getChildCount();
+                Button btn = linLayout.getChildAt(4).findViewById(R.id.categoryName);
                 Category category = new Category();
                 Button catButton = rowView.findViewById(R.id.categoryName);
                 catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
@@ -338,7 +338,9 @@ public class HomePage extends AppCompatActivity
                 TextView spent = rowView.findViewById(R.id.spent);
                 spent.setText(getFormattedNumber(0.0));
                 category.setSpent(0.0);
+                rowView.setBackgroundColor(Color.argb(40, 0, 255, 0));
                 linLayout.addView(addCategory);
+                Button v = linLayout.getChildAt(4).findViewById(R.id.categoryName);
                 num = linLayout.getChildCount();
             }
         });
