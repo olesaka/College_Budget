@@ -321,14 +321,18 @@ public class HomePage extends AppCompatActivity
                 linLayout.removeViewAt(linLayout.getChildCount()-1);
                 num = linLayout.getChildCount();
                 linLayout.addView(rowView);
-                Button btn = linLayout.getChildAt(4).findViewById(R.id.categoryName);
+                Button catButton = linLayout.getChildAt(4).findViewById(R.id.categoryName);
                 Category category = new Category();
-                Button catButton = rowView.findViewById(R.id.categoryName);
+                category.setName(categoryName);
+                category.setBudgeted(0.0);
+                category.setSpent(0.0);
+                categories.add(category);
+                //Button catButton = rowView.findViewById(R.id.categoryName);
                 catButton.getBackground().setColorFilter(0xFF0000FF, PorterDuff.Mode.MULTIPLY);
                 catButton.setOnClickListener(HomePage.this);
                 catButton.setText(categoryName);
                 category.setName(categoryName);
-                catButton.setId(linLayout.getChildCount()-1);
+                //catButton.setId(linLayout.getChildCount()-1);
                 Button addTran = rowView.findViewById(R.id.addTransaction);
                 addTran.setTag(categoryName);
                 addTran.setOnClickListener(HomePage.this);
@@ -342,6 +346,7 @@ public class HomePage extends AppCompatActivity
                 linLayout.addView(addCategory);
                 Button v = linLayout.getChildAt(4).findViewById(R.id.categoryName);
                 num = linLayout.getChildCount();
+                View vi = getLinearView("car");
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
