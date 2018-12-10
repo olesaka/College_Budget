@@ -504,7 +504,7 @@ public class HomePage extends AppCompatActivity
         // get proper overflow amount
         double trueAmount = 0.0;
         for(Category category : categories){
-            if (categoryName == category.getName()){
+            if (categoryName.equals(category.getName())){
                 trueAmount = amount - (category.getBudgeted() - category.getSpent());
             }
         }
