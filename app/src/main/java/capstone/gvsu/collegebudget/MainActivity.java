@@ -83,17 +83,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // ...
             }
         }
-
+        // result came from HomePage
         if (requestCode == SIGN_OUT_CODE){
             if (resultCode == RESULT_OK){
-
+                // if HomePage is attempting to sign out
                 Boolean signOut = data.getExtras().getBoolean("signOut");
-
                 if(signOut){
-
+                    //sign the user out of both google services and firebase
                     mAuth.signOut();
                     mGoogleSignInClient.signOut();
-
                 }
             }
         }

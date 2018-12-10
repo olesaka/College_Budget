@@ -104,8 +104,10 @@ public class HomePage extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        // if the drawer is open, simply close drawer
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        // otherwise we handle as normal
         } else {
             super.onBackPressed();
         }
@@ -126,13 +128,8 @@ public class HomePage extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            intent.putExtra("user", (Parcelable)user);
-            startActivity(intent);
-            return true;
-        }
-        else if (id == R.id.action_sign_out) {
+        // if sign out is tapped, sign the user out
+        if (id == R.id.action_sign_out) {
             signOut();
             return true;
         }
@@ -140,6 +137,12 @@ public class HomePage extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    a simple method that ends current home page activity
+    and returns a result to the main activity that the
+    variable signOut is true. this lets the mainActivity know
+    that the user wishes to be signed out.
+    */
     private void signOut() {
         Intent intent = new Intent();
         intent.putExtra("signOut", true);
@@ -198,13 +201,16 @@ public class HomePage extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        // if we are returning from the Transaction page, we have to update
+        // the information on the Home Screen
         if (requestCode == UPDATE_CODE){
             if (resultCode == RESULT_OK){
+                // if there is data that needs to be updated, we have to update
+                // the screen
                 Boolean update = data.getExtras().getBoolean("update");
                 if(update){
+                    // update the screen
                    updateHomePage();
-                    //TODO: ADD IN UPDATING THE HOMEPAGE DISPLAY -- TO BE DONE BY JAKE OR ANDY
-
                 }
             }
         }
@@ -358,15 +364,20 @@ public class HomePage extends AppCompatActivity
         builder.show();
     }
 
+    /*
+    This main function that handles the addition of a transaction to a category.
+    It prompts the user for all necessary information, and handles scenarios where
+    a user is about to go over budget in said category.
+    */
     public void addTransaction(){
-
+        // create layout to be used to populate the dialog builder
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
         // Add a EditView here for the "Description" label
         final EditText descriptionBox = new EditText(this);
         descriptionBox.setHint("Description");
-        layout.addView(descriptionBox);
+        layout.addView(descriptionBox); // add view to the layout
 
         // Add another EditView here for the "Amount" label
         final EditText amountBox = new EditText(this);
@@ -374,21 +385,29 @@ public class HomePage extends AppCompatActivity
         amountBox.setHint("$0.00");
         layout.addView(amountBox); // Another add method
 
+        // create the dialog builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Transaction");
-        builder.setView(layout);
+        builder.setView(layout); // add our layout to the builder
+
+        // this is where we handle button pushes. Our first button is OK, the second
+        // is Cancel.
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try{
+                    // pull information from the dialog box
                     String amountStr = amountBox.getText().toString();
                     String descStr = descriptionBox.getText().toString();
+                    // handle a blank message input
                     if(descStr.equals("")) descStr="No Message";
                     double amount = Double.parseDouble(amountStr);
+                    // check amount vs the total budget amount
                     if(amountIsMoreThanBudgeted(amount)){
                         // Ask user if they want to pull funds from available categories
                         warnUserOfBudgetOverflow(amount, descStr);
 
+                    // if amount is cleared, add the transaction
                     }else{
                         database.addNewTransaction(categoryName, amount, descStr);
                         updateSpentAndLeft(amount);
@@ -402,27 +421,43 @@ public class HomePage extends AppCompatActivity
                 }
             }
         });
+        // if the user decides to cancel their input, simply exit the dialog box
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
+        // display the builder
         builder.show();
     }
 
+    /*
+    this is a simple function used above in addTransaction() to
+    make sure that the user can afford to add a transaction of specified
+    amount to the category
+    */
     public boolean amountIsMoreThanBudgeted(double amount){
         for(Category category : categories){
             if(categoryName.equals(category.getName())) {
+                // if amount is larger than remaining budget in category return true
                 if (amount > (category.getBudgeted() - category.getSpent())) {
                     return true;
                 }
             }
         }
+        // if we're in the clear, return false
         return false;
     }
 
+    /*
+    this function is used above in addTransaction() if a user is attempting to add
+    a transaction that will result in a category going over budget. This function
+    creates another dialog box that prompts the user to either pull funds from a
+    different unlocked budget, or instead simply allow the budget to overflow.
+    */
     public void warnUserOfBudgetOverflow(final double amount, final String descStr) {
+        // layout to populate the builder
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -431,17 +466,23 @@ public class HomePage extends AppCompatActivity
         warningBox.setText("Transaction will go over budget. Would you like to pull funds from an unlocked Category?");
         warningBox.setFocusable(false);
         warningBox.setClickable(false);
-        layout.addView(warningBox);
+        layout.addView(warningBox); // add to layout
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Warning");
-        builder.setView(layout);
+        builder.setView(layout); // add layout to builder for proper display
+
+        // two choices to either pull funds from another category, or allow transaction
+        // to exceed the budgeted amount
         builder.setPositiveButton("Pull Funds", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // pull excess funds from a different category(ies)
                 takeMoneyFromAnotherUnlockedCategory(amount, descStr);
             }
         });
+        // if we exceed the budgeted amount, we simply add transaction as normal
+        // which results in a category overflow
         builder.setNegativeButton("Exceed Budgeted", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -478,6 +519,8 @@ public class HomePage extends AppCompatActivity
         final ArrayList<String> spinnerArray = new ArrayList<String>();
         spinnerArray.add("All");
         for(Category category : categories) {
+            // make sure that the category is unlocked
+            // and can also handle the amount to be pulled
             if(category.getLocked() == false
                     && !category.getName().equals(categoryName)
                     && trueAmt < (category.getBudgeted() - category.getSpent())) {
@@ -489,12 +532,14 @@ public class HomePage extends AppCompatActivity
         final Spinner spinner = new Spinner(this);
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, spinnerArray);
         spinner.setAdapter(spinnerArrayAdapter);
-        layout.addView(spinner);
+        layout.addView(spinner); // add spinner to layout
 
         // create the builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Choose a Category to Pull From");
-        builder.setView(layout);
+        builder.setView(layout); // populate with layout
+
+        // If user clicks Ok, pull from chosen spinner item
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -505,7 +550,7 @@ public class HomePage extends AppCompatActivity
                     double amt = trueAmt / (spinnerArray.size() - 1);
 
                     // add transaction to all unlocked categories
-                    // make sure the category can handle the transaction without going overbudget itself
+                    // make sure the category can handle the transaction without going over budget itself
                     for (Category category : categories) {
                         if (category.getLocked() == false
                                 && category.getName() != categoryName
@@ -537,25 +582,18 @@ public class HomePage extends AppCompatActivity
                         }
                     }
                 }
-                // add negative value transaction to account for category "pulling" money from unlocked categories
-                //database.addNewTransaction(categoryName, (trueAmt * -1.00), "Overflow Prevention");
-                //updateSpentAndLeft(trueAmt);
-                //lineView = getView();
-                //updateCategorySpent();
-
-                // place transaction
-                //database.addNewTransaction(categoryName, amount, descStr);
-                //updateSpentAndLeft(amount);
-                //lineView = getView();
-                //updateCategorySpent();
             }
         });
+
+        // if user cancels, simply cancel the transaction and return to Home Screen
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
+
+        // display the dialog
         builder.show();
     }
 

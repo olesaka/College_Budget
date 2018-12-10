@@ -27,8 +27,6 @@
         <activity
             android:name=".Transactions"
             android:screenOrientation="portrait"/>
-        <activity android:name=".SettingsActivity"
-            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
