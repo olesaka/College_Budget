@@ -142,6 +142,7 @@ public class HomePage extends AppCompatActivity
     and returns a result to the main activity that the
     variable signOut is true. this lets the mainActivity know
     that the user wishes to be signed out.
+    ***Look into***
     */
     private void signOut() {
         Intent intent = new Intent();
